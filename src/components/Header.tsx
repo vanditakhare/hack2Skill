@@ -15,6 +15,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { SeniorProfile, Language, TextSize } from "../types";
+import { getTranslation } from "../utils/translations";
 
 interface HeaderProps {
   profile: SeniorProfile;
@@ -33,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
+  const t = getTranslation(profile.language);
 
   useEffect(() => {
     const updateTime = () => {
@@ -72,9 +74,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   const getGreetingIcon = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "🌅 Morning";
-    if (hour < 17) return "☀️ Afternoon";
-    return "🌙 Evening";
+    if (hour < 12) return t.timeMorning;
+    if (hour < 17) return t.timeAfternoon;
+    return t.timeEvening;
   };
 
   return (
@@ -96,18 +98,18 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-emerald-950 flex items-center gap-2">
-                Mitraa
+                {t.appName}
                 <span className="text-sm font-sans font-medium px-2 py-0.5 rounded-md bg-emerald-100/90 text-emerald-900 border border-emerald-200">
                   मित्रा
                 </span>
               </h1>
               <span className="hidden sm:inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-900 border border-emerald-300/80">
                 <Sparkles className="w-3 h-3 text-emerald-700" />
-                Senior Care Sanctuary
+                {t.appTagline}
               </span>
             </div>
             <p className="text-xs text-stone-600 font-medium flex items-center gap-1.5 mt-0.5">
-              <span>Personal Companion for</span>
+              <span>{t.companionFor}</span>
               <span className="font-bold text-emerald-950 bg-emerald-100/80 px-1.5 py-0.2 rounded">
                 {profile.preferredHonorific || profile.name}
               </span>
@@ -137,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-stone-200 hover:border-emerald-500 hover:bg-emerald-50 font-bold text-xs sm:text-sm text-stone-800 transition active:scale-95 shadow-2xs cursor-pointer min-h-[44px]"
           >
             <Type className="w-4 h-4 text-emerald-700" />
-            <span className="hidden xs:inline text-stone-600 font-medium">Size:</span>
+            <span className="hidden xs:inline text-stone-600 font-medium">{t.btnTextSize}:</span>
             <span className="uppercase text-xs font-extrabold bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded-md border border-emerald-200">
               {profile.textSize === "extra-large" ? "XL" : profile.textSize === "large" ? "Large" : "Medium"}
             </span>
@@ -155,13 +157,13 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             {profile.highContrast ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4 text-emerald-800" />}
-            <span className="hidden sm:inline">Contrast</span>
+            <span className="hidden sm:inline">{t.btnContrast}</span>
           </button>
 
           {/* Language Selector */}
           <div className="relative flex items-center">
             <label htmlFor="language-select" className="sr-only">
-              Choose Language
+              {t.chooseLanguage}
             </label>
             <div className="flex items-center bg-white border border-stone-200 hover:border-emerald-500 rounded-xl px-2.5 py-1.5 shadow-2xs">
               <Globe className="w-4 h-4 text-emerald-700 mr-1.5 shrink-0" />
@@ -206,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Press for Emergency SOS Assistance"
           >
             <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300" />
-            <span>SOS</span>
+            <span>{t.btnEmergencySOS}</span>
           </button>
         </div>
       </div>

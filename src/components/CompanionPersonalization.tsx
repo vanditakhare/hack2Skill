@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { SeniorProfile, Language, TextSize } from "../types";
 import { speechHelper } from "../utils/speech";
+import { getTranslation } from "../utils/translations";
 
 interface CompanionPersonalizationProps {
   profile: SeniorProfile;
@@ -30,6 +31,8 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
   profile,
   onUpdateProfile,
 }) => {
+  const t = getTranslation(profile.language);
+
   const [activeTab, setActiveTab] = useState<"news" | "brain" | "relax" | "settings">("news");
   const [showRiddleAnswer, setShowRiddleAnswer] = useState(false);
   const [isPlayingMelody, setIsPlayingMelody] = useState(false);
@@ -42,6 +45,15 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
   const [editTextSize, setEditTextSize] = useState<TextSize>(profile.textSize);
   const [editSpeed, setEditSpeed] = useState<number>(profile.voiceSpeed || 0.88);
   const [editContrast, setEditContrast] = useState<boolean>(profile.highContrast);
+
+  useEffect(() => {
+    setEditName(profile.name);
+    setEditHonorific(profile.preferredHonorific);
+    setEditLanguage(profile.language);
+    setEditTextSize(profile.textSize);
+    setEditSpeed(profile.voiceSpeed || 0.88);
+    setEditContrast(profile.highContrast);
+  }, [profile]);
 
   // Web Audio ambient sound synthesizer
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -108,7 +120,49 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
     };
   }, []);
 
-  const positiveNews = [
+  const positiveNewsHindi = [
+    {
+      title: "सामुदायिक पुष्प वाटिका में वरिष्ठ नागरिकों के लिए बना सुखद टहलने का पथ",
+      snippet:
+        "पड़ोस के युवाओं और स्वयंसेवकों ने पार्क में चमेली, गेंदे के पौधे लगाए और बुजुर्गों के सुबह सुकून से बैठने के लिए छायादार बेंचें बनाई हैं।",
+      tag: "समाज व समुदाय",
+    },
+    {
+      title: "सुबह की गुनगुनी धूप और धीमी सैर से स्मरण शक्ति और नींद में गहरा सुधार",
+      snippet:
+        "एक नए स्वास्थ्य अध्ययन के अनुसार केवल 20 मिनट की सुबह की धूप और अपनों के साथ सौम्य बातचीत से वरिष्ठजनों को बहुत गहरी नींद और प्रसन्नता मिलती है।",
+      tag: "स्वास्थ्य व प्रसन्नता",
+    },
+    {
+      title: "शहर के पुस्तकालयों में दादा-दादी के लिए निःशुल्क डिजिटल शिक्षण चौपाल",
+      snippet:
+        "स्थानीय पुस्तकालयों में दयालु स्वयंसेवक बुजुर्गों को दूर रहने वाले बच्चों से वीडियो कॉल करना और डिजिटल समाचार पत्र पढ़ना आराम से सिखा रहे हैं।",
+      tag: "स्नेह व सहयोग",
+    },
+  ];
+
+  const positiveNewsSpanish = [
+    {
+      title: "Jardín comunitario crea un sendero tranquilo para caminatas matutinas",
+      snippet:
+        "Jóvenes voluntarios del vecindario sembraron flores aromáticas e instalaron cómodos bancos con sombra para que los adultos mayores paseen cada mañana.",
+      tag: "Comunidad",
+    },
+    {
+      title: "El sol matutino y la caminata suave elevan la memoria y el buen dormir",
+      snippet:
+        "Un nuevo informe de bienestar confirma que solo 20 minutos de luz solar suave y charla relajada garantizan un sueño reparador y un ánimo alegre.",
+      tag: "Salud y bienestar",
+    },
+    {
+      title: "Círculos de lectura digital en bibliotecas para abuelos y abuelas",
+      snippet:
+        "Bibliotecas locales realizan talleres personalizados donde voluntarios amables enseñan a realizar videollamadas con sus nietos y leer libros digitales.",
+      tag: "Amabilidad",
+    },
+  ];
+
+  const positiveNewsEnglish = [
     {
       title: "Community Flower Garden Creates Peaceful Morning Walking Trail",
       snippet:
@@ -128,6 +182,13 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
       tag: "Kindness",
     },
   ];
+
+  const currentNews =
+    profile.language === "Hindi"
+      ? positiveNewsHindi
+      : profile.language === "Spanish"
+      ? positiveNewsSpanish
+      : positiveNewsEnglish;
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,10 +214,10 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
           </div>
           <div>
             <h2 className="text-2xl font-extrabold text-stone-900 tracking-tight">
-              Companion, Positive News & Settings
+              {t.modPersonalizationTitle}
             </h2>
             <p className="text-stone-600 text-sm sm:text-base font-medium">
-              Uplifting wholesome stories, gentle mind games, soothing ambient melodies, and custom comfort preferences.
+              {t.modPersonalizationDesc}
             </p>
           </div>
         </div>
@@ -171,7 +232,12 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
-            📰 Positive Daily News
+            📰{" "}
+            {profile.language === "Hindi"
+              ? "सकारात्मक दैनिक समाचार"
+              : profile.language === "Spanish"
+              ? "Noticias positivas"
+              : "Positive Daily News"}
           </button>
 
           <button
@@ -182,7 +248,12 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
-            🧩 Daily Brain Riddle
+            🧩{" "}
+            {profile.language === "Hindi"
+              ? "दैनिक मस्तिष्क पहेली"
+              : profile.language === "Spanish"
+              ? "Acertijo mental"
+              : "Daily Brain Riddle"}
           </button>
 
           <button
@@ -193,7 +264,12 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
-            🎵 Peaceful Ambient Melodies
+            🎵{" "}
+            {profile.language === "Hindi"
+              ? "शांत सुरीली धुनें"
+              : profile.language === "Spanish"
+              ? "Melodías relajantes"
+              : "Peaceful Ambient Melodies"}
           </button>
 
           <button
@@ -204,7 +280,12 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
-            ⚙️ Personal Preferences
+            ⚙️{" "}
+            {profile.language === "Hindi"
+              ? "व्यक्तिगत प्राथमिकताएं"
+              : profile.language === "Spanish"
+              ? "Preferencias personales"
+              : "Personal Preferences"}
           </button>
         </div>
       </div>
@@ -212,7 +293,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
       {/* Tab 1: Positive Daily News */}
       {activeTab === "news" && (
         <div className="space-y-4 animate-fadeIn">
-          {positiveNews.map((news, idx) => (
+          {currentNews.map((news, idx) => (
             <div
               key={idx}
               className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs space-y-3"
@@ -232,7 +313,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                   className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 cursor-pointer min-h-[38px]"
                 >
                   <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>Listen to Story</span>
+                  <span>{t.btnListen}</span>
                 </button>
               </div>
 
@@ -256,20 +337,36 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             </div>
             <div>
               <h3 className="text-2xl font-black text-stone-900">
-                Gentle Morning Brain Teaser
+                {profile.language === "Hindi"
+                  ? "सुबह की मधुर दिमागी पहेली"
+                  : profile.language === "Spanish"
+                  ? "Acertijo matutino suave"
+                  : "Gentle Morning Brain Teaser"}
               </h3>
               <p className="text-sm font-medium text-stone-500">
-                Keep your wonderful mind active, playful, and cheerful
+                {profile.language === "Hindi"
+                  ? "अपने ऊर्जावान मस्तिष्क को सक्रिय, चंचल और प्रसन्न रखें"
+                  : profile.language === "Spanish"
+                  ? "Mantén tu mente activa, despierta y alegre"
+                  : "Keep your wonderful mind active, playful, and cheerful"}
               </p>
             </div>
           </div>
 
           <div className="p-6 rounded-3xl bg-emerald-50/70 border-2 border-emerald-200 space-y-4">
             <span className="text-xs font-black uppercase tracking-wider text-emerald-900">
-              Riddle of the Day:
+              {profile.language === "Hindi"
+                ? "आज की पहेली:"
+                : profile.language === "Spanish"
+                ? "Acertijo del día:"
+                : "Riddle of the Day:"}
             </span>
             <p className="text-xl sm:text-2xl font-extrabold text-stone-900 leading-relaxed">
-              "I have keys, but no doors. I have a space bar, but no stars. You can type on me to write to your grandchildren. What am I?"
+              {profile.language === "Hindi"
+                ? "\"मुझमें कुंजियां (Keys) हैं पर कोई ताला या दरवाजा नहीं। मुझमें स्पेस बार है पर कोई तारे नहीं। आप मुझ पर लिखकर अपने पोते-पोतियों को संदेश भेजते हैं। बताइए मैं कौन हूँ?\""
+                : profile.language === "Spanish"
+                ? "\"Tengo teclas pero no puertas. Tengo una barra espaciadora pero no estrellas. Me usas para escribirle a tus nietos. ¿Quién soy?\""
+                : "\"I have keys, but no doors. I have a space bar, but no stars. You can type on me to write to your grandchildren. What am I?\""}
             </p>
 
             <div className="pt-2">
@@ -277,14 +374,30 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 onClick={() => setShowRiddleAnswer(!showRiddleAnswer)}
                 className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-sm transition active:scale-95 cursor-pointer shadow-xs min-h-[44px]"
               >
-                {showRiddleAnswer ? "Hide Answer" : "Reveal Answer"}
+                {showRiddleAnswer
+                  ? profile.language === "Hindi"
+                    ? "उत्तर छिपाएं"
+                    : profile.language === "Spanish"
+                    ? "Ocultar respuesta"
+                    : "Hide Answer"
+                  : profile.language === "Hindi"
+                  ? "उत्तर देखें"
+                  : profile.language === "Spanish"
+                  ? "Revelar respuesta"
+                  : "Reveal Answer"}
               </button>
             </div>
 
             {showRiddleAnswer && (
               <div className="p-4 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-950 font-black text-lg animate-fadeIn flex items-center gap-2">
                 <CheckCircle2 className="w-6 h-6 text-emerald-700" />
-                <span>Answer: A Computer Keyboard or Phone Keyboard! 😊</span>
+                <span>
+                  {profile.language === "Hindi"
+                    ? "उत्तर: कंप्यूटर या मोबाइल का कीबोर्ड (Keyboard)! 😊"
+                    : profile.language === "Spanish"
+                    ? "¡Respuesta: El teclado de la computadora o del teléfono! 😊"
+                    : "Answer: A Computer Keyboard or Phone Keyboard! 😊"}
+                </span>
               </div>
             )}
           </div>
@@ -299,10 +412,18 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
               <Music className="w-10 h-10 animate-pulse" />
             </div>
             <h3 className="text-2xl sm:text-3xl font-black text-stone-900">
-              Peaceful Ambient Soundscape
+              {profile.language === "Hindi"
+                ? "शांत सुरम्य संगीतमय वातावरण"
+                : profile.language === "Spanish"
+                ? "Ambiente sonoro tranquilo"
+                : "Peaceful Ambient Soundscape"}
             </h3>
             <p className="text-stone-600 text-base font-medium">
-              Gentle, relaxing soft chimes and harmonic tones designed to bring calm during afternoon rest or evening tea.
+              {profile.language === "Hindi"
+                ? "दोपहर के विश्राम या शाम की चाय के दौरान मन को शांति देने के लिए तैयार की गई मधुर व सौम्य घंटियों की धुन।"
+                : profile.language === "Spanish"
+                ? "Campanadas suaves y tonos armónicos diseñados para brindar tranquilidad en el descanso o la merienda."
+                : "Gentle, relaxing soft chimes and harmonic tones designed to bring calm during afternoon rest or evening tea."}
             </p>
 
             <div className="pt-4">
@@ -312,7 +433,13 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                   className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-lg shadow-md transition active:scale-95 cursor-pointer min-h-[52px]"
                 >
                   <Square className="w-6 h-6" />
-                  <span>Stop Gentle Music</span>
+                  <span>
+                    {profile.language === "Hindi"
+                      ? "मधुर संगीत बंद करें"
+                      : profile.language === "Spanish"
+                      ? "Detener música suave"
+                      : "Stop Gentle Music"}
+                  </span>
                 </button>
               ) : (
                 <button
@@ -320,14 +447,24 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                   className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-lg shadow-md transition active:scale-95 cursor-pointer min-h-[52px]"
                 >
                   <Play className="w-6 h-6" />
-                  <span>Play Soothing Music</span>
+                  <span>
+                    {profile.language === "Hindi"
+                      ? "शांत संगीत बजाएं"
+                      : profile.language === "Spanish"
+                      ? "Reproducir música relajante"
+                      : "Play Soothing Music"}
+                  </span>
                 </button>
               )}
             </div>
 
             {isPlayingMelody && (
               <p className="text-xs font-bold text-emerald-800 animate-pulse pt-2">
-                🎵 Playing relaxing soft chime tones... take a deep breath and relax.
+                {profile.language === "Hindi"
+                  ? "🎵 मधुर शांत घंटियों की धुन बज रही है... गहरी सांस लें और तनावमुक्त हों।"
+                  : profile.language === "Spanish"
+                  ? "🎵 Reproduciendo tonos relajantes... respira profundo y descansa."
+                  : "🎵 Playing relaxing soft chime tones... take a deep breath and relax."}
               </p>
             )}
           </div>
@@ -338,17 +475,29 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
       {activeTab === "settings" && (
         <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs animate-fadeIn">
           <h3 className="text-2xl font-black text-stone-900 mb-2">
-            Senior Accessibility & Profile Preferences
+            {profile.language === "Hindi"
+              ? "वरिष्ठ सुगमता और प्रोफ़ाइल प्राथमिकताएं"
+              : profile.language === "Spanish"
+              ? "Accesibilidad y preferencias de perfil"
+              : "Senior Accessibility & Profile Preferences"}
           </h3>
           <p className="text-xs text-stone-500 font-medium mb-6">
-            Customize how Mitraa looks and sounds for your maximum comfort
+            {profile.language === "Hindi"
+              ? "अपनी अधिकतम सुविधा के लिए मित्रा के रूप-रंग और आवाज़ को अनुकूलित करें"
+              : profile.language === "Spanish"
+              ? "Personaliza cómo se ve y suena Mitraa para tu máxima comodidad"
+              : "Customize how Mitraa looks and sounds for your maximum comfort"}
           </p>
 
           <form onSubmit={handleSaveSettings} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-bold text-stone-700 block mb-1">
-                  Your Full Name
+                  {profile.language === "Hindi"
+                    ? "आपका पूरा नाम"
+                    : profile.language === "Spanish"
+                    ? "Tu nombre completo"
+                    : "Your Full Name"}
                 </label>
                 <input
                   type="text"
@@ -360,20 +509,34 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
 
               <div>
                 <label className="text-sm font-bold text-stone-700 block mb-1">
-                  How should Mitraa address you? (Preferred Honorific)
+                  {profile.language === "Hindi"
+                    ? "मित्रा आपको किस आदरसूचक नाम से संबोधित करे?"
+                    : profile.language === "Spanish"
+                    ? "¿Cómo debe llamarte Mitraa? (Tratamiento preferido)"
+                    : "How should Mitraa address you? (Preferred Honorific)"}
                 </label>
                 <input
                   type="text"
                   value={editHonorific}
                   onChange={(e) => setEditHonorific(e.target.value)}
-                  placeholder="e.g. Ashaji, Dadaji, Grandpa, Mrs. Sharma"
+                  placeholder={
+                    profile.language === "Hindi"
+                      ? "जैसे: आशाजी, दादाजी, नानाजी, वर्मा जी"
+                      : profile.language === "Spanish"
+                      ? "ej. Don Roberto, Abuelo, Sra. María"
+                      : "e.g. Ashaji, Dadaji, Grandpa, Mrs. Sharma"
+                  }
                   className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-emerald-600"
                 />
               </div>
 
               <div>
                 <label className="text-sm font-bold text-stone-700 block mb-1">
-                  Preferred Language
+                  {profile.language === "Hindi"
+                    ? "पसंदीदा भाषा (Preferred Language)"
+                    : profile.language === "Spanish"
+                    ? "Idioma preferido"
+                    : "Preferred Language"}
                 </label>
                 <select
                   value={editLanguage}
@@ -393,16 +556,38 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
 
               <div>
                 <label className="text-sm font-bold text-stone-700 block mb-1">
-                  Screen Text Size
+                  {profile.language === "Hindi"
+                    ? "स्क्रीन टेक्स्ट आकार"
+                    : profile.language === "Spanish"
+                    ? "Tamaño del texto en pantalla"
+                    : "Screen Text Size"}
                 </label>
                 <select
                   value={editTextSize}
                   onChange={(e) => setEditTextSize(e.target.value as TextSize)}
                   className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-emerald-600 bg-white"
                 >
-                  <option value="normal">Medium (Standard)</option>
-                  <option value="large">Large (Recommended for Seniors)</option>
-                  <option value="extra-large">Extra Large (Maximum Legibility)</option>
+                  <option value="normal">
+                    {profile.language === "Hindi"
+                      ? "मध्यम (मानक)"
+                      : profile.language === "Spanish"
+                      ? "Mediano (Estándar)"
+                      : "Medium (Standard)"}
+                  </option>
+                  <option value="large">
+                    {profile.language === "Hindi"
+                      ? "बड़ा (वरिष्ठ नागरिकों के लिए अनुशंसित)"
+                      : profile.language === "Spanish"
+                      ? "Grande (Recomendado para adultos mayores)"
+                      : "Large (Recommended for Seniors)"}
+                  </option>
+                  <option value="extra-large">
+                    {profile.language === "Hindi"
+                      ? "अति बड़ा (अधिकतम स्पष्टता)"
+                      : profile.language === "Spanish"
+                      ? "Extra grande (Máxima legibilidad)"
+                      : "Extra Large (Maximum Legibility)"}
+                  </option>
                 </select>
               </div>
             </div>
@@ -411,10 +596,24 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-sm font-bold text-stone-700">
-                  Voice Speech Speed: {Math.round(editSpeed * 100)}%
+                  {profile.language === "Hindi"
+                    ? `बोलने की गति: ${Math.round(editSpeed * 100)}%`
+                    : profile.language === "Spanish"
+                    ? `Velocidad de voz: ${Math.round(editSpeed * 100)}%`
+                    : `Voice Speech Speed: ${Math.round(editSpeed * 100)}%`}
                 </label>
                 <span className="text-xs text-stone-500 font-semibold">
-                  {editSpeed <= 0.85 ? "Gentle & Slow (Recommended)" : "Normal Speed"}
+                  {editSpeed <= 0.85
+                    ? profile.language === "Hindi"
+                      ? "सौम्य और धीमी गति (अनुशंसित)"
+                      : profile.language === "Spanish"
+                      ? "Suave y pausada (Recomendada)"
+                      : "Gentle & Slow (Recommended)"
+                    : profile.language === "Hindi"
+                    ? "सामान्य गति"
+                    : profile.language === "Spanish"
+                    ? "Velocidad normal"
+                    : "Normal Speed"}
                 </span>
               </div>
               <input
@@ -432,10 +631,18 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             <div className="flex items-center justify-between p-4 rounded-2xl bg-stone-50 border border-stone-200">
               <div>
                 <span className="font-bold text-stone-900 block text-sm">
-                  High-Contrast Black & Gold Mode
+                  {profile.language === "Hindi"
+                    ? "उच्च-कंट्रास्ट मोड (High-Contrast Mode)"
+                    : profile.language === "Spanish"
+                    ? "Modo de alto contraste"
+                    : "High-Contrast Black & Gold Mode"}
                 </span>
                 <span className="text-xs text-stone-500">
-                  Maximum contrast for low-vision comfort
+                  {profile.language === "Hindi"
+                    ? "कमज़ोर दृष्टि के लिए अधिकतम स्पष्टता"
+                    : profile.language === "Spanish"
+                    ? "Máximo contraste para descansar la vista"
+                    : "Maximum contrast for low-vision comfort"}
                 </span>
               </div>
               <input
@@ -449,7 +656,12 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             <div className="flex items-center justify-between pt-2">
               {savedSettingsNotice ? (
                 <span className="text-emerald-700 font-bold text-sm flex items-center gap-1.5 animate-fadeIn">
-                  <CheckCircle2 className="w-5 h-5" /> Preferences saved!
+                  <CheckCircle2 className="w-5 h-5" />
+                  {profile.language === "Hindi"
+                    ? "प्राथमिकताएं सहेज ली गईं!"
+                    : profile.language === "Spanish"
+                    ? "¡Preferencias guardadas!"
+                    : "Preferences saved!"}
                 </span>
               ) : (
                 <span />
@@ -460,7 +672,13 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 className="flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-base shadow-md transition active:scale-95 cursor-pointer min-h-[48px]"
               >
                 <Save className="w-5 h-5" />
-                <span>Save Preferences</span>
+                <span>
+                  {profile.language === "Hindi"
+                    ? "प्राथमिकताएं सहेजें"
+                    : profile.language === "Spanish"
+                    ? "Guardar preferencias"
+                    : "Save Preferences"}
+                </span>
               </button>
             </div>
           </form>

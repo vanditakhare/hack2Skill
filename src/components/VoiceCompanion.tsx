@@ -15,23 +15,33 @@ import {
 } from "lucide-react";
 import { SeniorProfile, ChatMessage } from "../types";
 import { speechHelper, createSpeechRecognizer } from "../utils/speech";
+import { getTranslation } from "../utils/translations";
 
 interface VoiceCompanionProps {
   profile: SeniorProfile;
   initialMessage?: string;
   onNavigateModule?: (moduleId: string) => void;
+  seniorContextSummary?: string;
 }
 
 export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
   profile,
   initialMessage,
   onNavigateModule,
+  seniorContextSummary,
 }) => {
+  const t = getTranslation(profile.language);
+
+  const getInitialGreeting = () => {
+    const name = profile.preferredHonorific || profile.name;
+    return t.welcomeMessage.replace("{name}", name);
+  };
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       role: "assistant",
-      text: `Namaste ${profile.preferredHonorific}! I am Mitraa, your caring daily companion. I am right here with you. Speak or type anytime—you can ask about your medicines, your day, or even ask me to read a letter. How are you feeling today?`,
+      text: getInitialGreeting(),
       timestamp: "Just now",
       voiceAudioAvailable: true,
     },
@@ -43,6 +53,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [micSupported, setMicSupported] = useState(true);
   const recognizerRef = useRef<any>(null);
+  const latestTranscriptRef = useRef<string>("");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Auto scroll to bottom
@@ -50,18 +61,18 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Update initial greeting when profile user changes
+  // Update initial greeting when profile user or language changes
   useEffect(() => {
     setMessages([
       {
-        id: `welcome-${profile.preferredHonorific}`,
+        id: `welcome-${profile.preferredHonorific}-${profile.language}`,
         role: "assistant",
-        text: `Namaste ${profile.preferredHonorific}! I am Mitraa, your caring daily companion. I am right here with you. Speak or type anytime—you can ask about your medicines, your day, or even ask me to read a letter. How are you feeling today?`,
+        text: getInitialGreeting(),
         timestamp: "Just now",
         voiceAudioAvailable: true,
       },
     ]);
-  }, [profile.preferredHonorific]);
+  }, [profile.preferredHonorific, profile.language]);
 
   // Handle TTS playback
   const speakMessage = (text: string) => {
@@ -79,12 +90,14 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
     setIsSpeaking(false);
   };
 
-  // Setup Speech Recognition
+  // Setup Speech Recognition with auto-submit on completion
   const startListening = () => {
     stopSpeaking();
+    latestTranscriptRef.current = "";
 
     const recognizer = createSpeechRecognizer(
       (transcript) => {
+        latestTranscriptRef.current = transcript;
         setInputQuery(transcript);
       },
       (error) => {
@@ -93,8 +106,14 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
       },
       () => {
         setIsListening(false);
+        // Automatically send the voice question when speech recognition finishes
+        const spoken = latestTranscriptRef.current.trim();
+        if (spoken) {
+          latestTranscriptRef.current = "";
+          handleSendMessage(spoken);
+        }
       },
-      profile.language === "Hindi" ? "hi-IN" : profile.language === "Spanish" ? "es-ES" : "en-US"
+      profile.language
     );
 
     if (!recognizer) {
@@ -112,20 +131,27 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
     }
   };
 
-  const stopListening = () => {
+  const stopListening = (sendIfPresent = true) => {
     if (recognizerRef.current) {
       try {
         recognizerRef.current.stop();
       } catch (e) {}
     }
     setIsListening(false);
+    if (sendIfPresent) {
+      const spoken = latestTranscriptRef.current.trim() || inputQuery.trim();
+      if (spoken) {
+        latestTranscriptRef.current = "";
+        handleSendMessage(spoken);
+      }
+    }
   };
 
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
     if (!query || isLoading) return;
 
-    stopListening();
+    stopListening(false);
     stopSpeaking();
 
     const userMsg: ChatMessage = {
@@ -137,6 +163,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
 
     setMessages((prev) => [...prev, userMsg]);
     setInputQuery("");
+    latestTranscriptRef.current = "";
     setIsLoading(true);
 
     try {
@@ -152,7 +179,8 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
           message: query,
           conversationHistory: historyForAPI,
           language: profile.language,
-          seniorName: profile.preferredHonorific,
+          seniorName: profile.preferredHonorific || profile.name,
+          seniorContext: seniorContextSummary || "",
         }),
       });
 
@@ -175,7 +203,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
       const fallbackMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        text: "I am listening to you. Could you please tap 'Repeat that' or ask me once more?",
+        text: "I am listening to you with care. Could you please ask me once more?",
         timestamp: "Now",
         voiceAudioAvailable: true,
       };
@@ -186,11 +214,11 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
   };
 
   const quickPrompts = [
-    { label: "📅 What should I do today?", query: "What is my schedule and what should I do today?" },
-    { label: "💊 Read my medicines", query: "Which medicines do I need to take today and when?" },
-    { label: "🛡️ Is an SMS safe to open?", query: "How can I tell if an SMS or WhatsApp message is a scam?" },
-    { label: "📖 Tell me an uplifting story", query: "Tell me a short, gentle, heartwarming story for today." },
-    { label: "💡 Explain what OTP means simply", query: "Can you explain what an OTP is in very simple words?" },
+    { label: t.promptSchedule, query: t.promptSchedule },
+    { label: t.promptMedicines, query: t.promptMedicines },
+    { label: t.promptScam, query: t.promptScam },
+    { label: t.promptStory, query: t.promptStory },
+    { label: t.promptOtp, query: t.promptOtp },
   ];
 
   return (
@@ -206,10 +234,10 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
           </div>
           <div>
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-emerald-950 tracking-tight">
-              Mitraa Voice Companion
+              {t.modVoiceCompanionTitle}
             </h2>
             <p className="text-xs sm:text-sm font-medium text-stone-600">
-              Gentle, patient, natural conversation in {profile.language} • {profile.preferredHonorific}
+              {t.chatSubtitle.replace("{name}", profile.preferredHonorific || profile.name)}
             </p>
           </div>
         </div>
@@ -221,7 +249,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
               onClick={stopSpeaking}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-bold animate-pulse cursor-pointer"
             >
-              <Volume2 className="w-4 h-4" /> Speaking (Tap to Stop)
+              <Volume2 className="w-4 h-4" /> {t.btnSpeaking}
             </button>
           )}
           <span className="text-xs font-semibold px-3 py-1 bg-stone-100 text-stone-700 rounded-full border border-stone-200">
@@ -274,7 +302,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
                       title="Listen to this message again"
                     >
                       <RotateCcw className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>Repeat that (बोलें)</span>
+                      <span>{t.btnRepeat}</span>
                     </button>
                   </div>
                 )}
@@ -295,7 +323,21 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
               <Sparkles className="w-5 h-5" />
             </div>
             <p className="text-base font-medium animate-pulse text-stone-700">
-              Mitraa is thinking with care...
+              {profile.language === "Hindi"
+                ? "मित्रा विचार कर रहा है..."
+                : profile.language === "Spanish"
+                ? "Mitraa está pensando con cariño..."
+                : profile.language === "Tamil"
+                ? "மித்ரா யோசிக்கிறது..."
+                : profile.language === "Bengali"
+                ? "মিত্রা ভাবছে..."
+                : profile.language === "Telugu"
+                ? "మిత్రా ఆలోచిస్తోంది..."
+                : profile.language === "Marathi"
+                ? "मित्रा विचार करत आहे..."
+                : profile.language === "Gujarati"
+                ? "મિત્રા વિચારી રહ્યું છે..."
+                : "Mitraa is thinking with care..."}
             </p>
           </div>
         )}
@@ -334,13 +376,13 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
           <button
             type="button"
             id="voice-companion-mic-btn"
-            onClick={isListening ? stopListening : startListening}
+            onClick={isListening ? () => stopListening(true) : startListening}
             className={`flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl font-extrabold transition shadow-md active:scale-95 cursor-pointer shrink-0 ${
               isListening
                 ? "bg-rose-600 text-white ring-4 ring-rose-300 animate-pulse"
                 : "bg-emerald-700 hover:bg-emerald-800 text-white"
             }`}
-            title={isListening ? "Listening... Tap to Stop" : "Tap to Speak your question"}
+            title={isListening ? t.btnListening : t.btnSpeak}
           >
             {isListening ? <MicOff className="w-7 h-7 sm:w-8 sm:h-8" /> : <Mic className="w-7 h-7 sm:w-8 sm:h-8" />}
           </button>
@@ -352,7 +394,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
               type="text"
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
-              placeholder={isListening ? "Listening to your voice..." : "Tap mic to talk, or type here..."}
+              placeholder={isListening ? t.btnListening : t.inputPlaceholder}
               className={`w-full rounded-2xl border-2 px-4 py-3.5 sm:py-4 focus:outline-none transition ${
                 isListening
                   ? "border-rose-400 bg-rose-50/50 text-stone-900"
@@ -367,7 +409,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
             disabled={!inputQuery.trim() || isLoading}
             id="voice-companion-send-btn"
             className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-emerald-800 hover:bg-emerald-900 disabled:opacity-40 text-white font-bold transition shadow-md active:scale-95 cursor-pointer shrink-0"
-            title="Send Message"
+            title={t.btnSend}
           >
             <Send className="w-6 h-6" />
           </button>
@@ -375,7 +417,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
 
         {isListening && (
           <p className="text-center text-rose-600 font-bold text-xs sm:text-sm mt-2 animate-pulse">
-            🎙️ Mitraa is listening attentively... speak comfortably at your own pace!
+            🎙️ {t.btnListening} {t.reassuranceCalm}
           </p>
         )}
       </div>

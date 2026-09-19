@@ -15,12 +15,14 @@ import {
 import { SeniorProfile, SimplifiedDocResult } from "../types";
 import { sampleDocuments } from "../data/mockSeniorData";
 import { speechHelper } from "../utils/speech";
+import { getTranslation } from "../utils/translations";
 
 interface DocumentSimplifierProps {
   profile: SeniorProfile;
 }
 
 export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile }) => {
+  const t = getTranslation(profile.language);
   const [selectedSample, setSelectedSample] = useState<string>("");
   const [documentText, setDocumentText] = useState<string>(sampleDocuments[0].preview);
   const [docType, setDocType] = useState<string>("bill");
@@ -81,7 +83,7 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
 
   const handleReadResult = () => {
     if (!result) return;
-    const textToRead = `Here is what this document means: ${result.summary}. Do you need to do anything? ${result.actionRequired}. Key points: ${result.keyPoints.join(". ")}. Safety advice: ${result.safeAdvice}`;
+    const textToRead = `${result.summary}. ${result.actionRequired}. ${result.keyPoints.join(". ")}. ${result.safeAdvice}`;
     speechHelper.speak(textToRead, {
       rate: profile.voiceSpeed || 0.88,
       language: profile.language,
@@ -98,10 +100,10 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
           </div>
           <div>
             <h2 className="text-2xl font-extrabold text-stone-900 tracking-tight">
-              Document & Letter Simplifier
+              {t.modDocTitle}
             </h2>
             <p className="text-stone-600 text-sm sm:text-base font-medium">
-              We translate confusing bills, medical papers, bank letters & government circulars into simple plain language.
+              {t.modDocDesc}
             </p>
           </div>
         </div>
@@ -109,7 +111,11 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
         {/* Try with Sample Documents */}
         <div className="mt-4 pt-4 border-t border-stone-100">
           <p className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-            Try with an example document (Tap any to test):
+            {profile.language === "Hindi"
+              ? "उदाहरण दस्तावेज़ चुनें (देखने के लिए टैप करें):"
+              : profile.language === "Spanish"
+              ? "Probar con un documento de ejemplo:"
+              : "Try with an example document (Tap any to test):"}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {sampleDocuments.map((s) => (
@@ -135,11 +141,21 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
         <div className="mt-5 space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-sm font-bold text-stone-700">
-              Document Text (Paste or Edit text below):
+              {profile.language === "Hindi"
+                ? "दस्तावेज़ का पाठ (नीचे चिपकाएँ या संपादित करें):"
+                : profile.language === "Spanish"
+                ? "Texto del documento (Pegar o editar abajo):"
+                : "Document Text (Paste or Edit text below):"}
             </label>
             <label className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300 cursor-pointer transition">
               <UploadCloud className="w-4 h-4" />
-              <span>Upload Document (.txt)</span>
+              <span>
+                {profile.language === "Hindi"
+                  ? "फ़ाइल अपलोड करें (.txt)"
+                  : profile.language === "Spanish"
+                  ? "Subir documento (.txt)"
+                  : "Upload Document (.txt)"}
+              </span>
               <input
                 type="file"
                 accept=".txt"
@@ -156,7 +172,13 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
               setSelectedSample("");
             }}
             rows={5}
-            placeholder="Paste any confusing letter, bill text, or hospital discharge note here..."
+            placeholder={
+              profile.language === "Hindi"
+                ? "कोई भी बिल, पत्र या अस्पताल की रिपोर्ट यहाँ पेस्ट करें..."
+                : profile.language === "Spanish"
+                ? "Pega aquí cualquier carta, factura o informe médico confuso..."
+                : "Paste any confusing letter, bill text, or hospital discharge note here..."
+            }
             className="w-full p-4 rounded-2xl border-2 border-stone-200 focus:border-emerald-600 focus:outline-none text-base text-stone-800 font-medium leading-relaxed bg-stone-50/50"
           />
 
@@ -167,7 +189,15 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
               className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white font-extrabold text-base transition shadow-md active:scale-95 cursor-pointer min-h-[48px]"
             >
               <Sparkles className="w-5 h-5 text-emerald-200" />
-              <span>{isLoading ? "Reading with Mitraa..." : "Explain This Document Simply"}</span>
+              <span>
+                {isLoading
+                  ? t.statusThinking
+                  : profile.language === "Hindi"
+                  ? "इस दस्तावेज़ को सरल भाषा में समझें"
+                  : profile.language === "Spanish"
+                  ? "Explicar este documento de forma sencilla"
+                  : "Explain This Document Simply"}
+              </span>
             </button>
           </div>
         </div>
@@ -180,10 +210,14 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
           <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-100">
             <div>
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                Mitraa Plain-Language Explanation
+                Mitraa {t.modDocBadge}
               </span>
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-stone-900 mt-1">
-                What This Document Means For You
+                {profile.language === "Hindi"
+                  ? "इस दस्तावेज़ का सरल अर्थ"
+                  : profile.language === "Spanish"
+                  ? "Lo que significa este documento"
+                  : "What This Document Means For You"}
               </h3>
             </div>
 
@@ -192,16 +226,20 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-sm cursor-pointer shadow-2xs min-h-[44px]"
             >
               <Volume2 className="w-4 h-4 text-emerald-700" />
-              <span>Listen to Explanation</span>
+              <span>{t.btnListen}</span>
             </button>
           </div>
 
-          {/* Core Answers in 3 Senior-Friendly Cards */}
+          {/* Core Answers in 2 Senior-Friendly Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Card 1: What is it? */}
             <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200">
               <span className="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">
-                1. What is this document?
+                {profile.language === "Hindi"
+                  ? "1. यह दस्तावेज़ क्या है?"
+                  : profile.language === "Spanish"
+                  ? "1. ¿Qué es este documento?"
+                  : "1. What is this document?"}
               </span>
               <p className="text-lg font-bold text-stone-900 leading-relaxed">
                 {result.summary}
@@ -217,7 +255,11 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
               }`}
             >
               <span className="text-xs font-bold uppercase tracking-wider text-stone-600 block mb-1">
-                2. Do I need to pay or take action?
+                {profile.language === "Hindi"
+                  ? "2. क्या मुझे कोई भुगतान या काम करना है?"
+                  : profile.language === "Spanish"
+                  ? "2. ¿Debo pagar o realizar alguna acción?"
+                  : "2. Do I need to pay or take action?"}
               </span>
               <p
                 className={`text-lg font-black leading-relaxed ${
@@ -232,13 +274,21 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
                   {result.amountDue && result.amountDue !== "None" && (
                     <div className="flex items-center gap-1 font-extrabold text-stone-900">
                       <DollarSign className="w-4 h-4 text-emerald-700" />
-                      Amount: {result.amountDue}
+                      {profile.language === "Hindi"
+                        ? `राशि: ${result.amountDue}`
+                        : profile.language === "Spanish"
+                        ? `Monto: ${result.amountDue}`
+                        : `Amount: ${result.amountDue}`}
                     </div>
                   )}
                   {result.dueDate && result.dueDate !== "None" && (
                     <div className="flex items-center gap-1 font-extrabold text-stone-900">
                       <Calendar className="w-4 h-4 text-emerald-700" />
-                      Due Date: {result.dueDate}
+                      {profile.language === "Hindi"
+                        ? `अंतिम तिथि: ${result.dueDate}`
+                        : profile.language === "Spanish"
+                        ? `Fecha límite: ${result.dueDate}`
+                        : `Due Date: ${result.dueDate}`}
                     </div>
                   )}
                 </div>
@@ -250,7 +300,11 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
           <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200">
             <h4 className="font-extrabold text-base text-emerald-950 mb-3 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-700" />
-              Key Details in Plain Language:
+              {profile.language === "Hindi"
+                ? "मुख्य बातें (सरल शब्दों में):"
+                : profile.language === "Spanish"
+                ? "Puntos clave en lenguaje sencillo:"
+                : "Key Details in Plain Language:"}
             </h4>
             <ul className="space-y-2">
               {result.keyPoints.map((pt, idx) => (
@@ -269,7 +323,13 @@ export const DocumentSimplifier: React.FC<DocumentSimplifierProps> = ({ profile 
           <div className="p-4 rounded-2xl bg-stone-100 border border-stone-200 flex items-start gap-3">
             <ShieldCheck className="w-6 h-6 text-emerald-700 shrink-0 mt-0.5" />
             <div>
-              <h5 className="font-bold text-sm text-stone-900">Mitraa Reassurance Note:</h5>
+              <h5 className="font-bold text-sm text-stone-900">
+                {profile.language === "Hindi"
+                  ? "मित्रा सुरक्षा सलाह:"
+                  : profile.language === "Spanish"
+                  ? "Consejo de seguridad de Mitraa:"
+                  : "Mitraa Reassurance Note:"}
+              </h5>
               <p className="text-sm text-stone-600 font-medium mt-0.5">{result.safeAdvice}</p>
             </div>
           </div>

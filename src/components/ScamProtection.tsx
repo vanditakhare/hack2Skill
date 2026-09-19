@@ -16,12 +16,14 @@ import {
 import { SeniorProfile, ScamCheckResult } from "../types";
 import { sampleScams } from "../data/mockSeniorData";
 import { speechHelper } from "../utils/speech";
+import { getTranslation } from "../utils/translations";
 
 interface ScamProtectionProps {
   profile: SeniorProfile;
 }
 
 export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
+  const t = getTranslation(profile.language);
   const [selectedSampleId, setSelectedSampleId] = useState<string>("");
   const [messageText, setMessageText] = useState<string>(sampleScams[0].text);
   const [senderInfo, setSenderInfo] = useState<string>(sampleScams[0].sender);
@@ -90,10 +92,10 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
           </div>
           <div>
             <h2 className="text-2xl font-extrabold text-stone-900 tracking-tight">
-              Safety & Scam Protection Shield
+              {t.modScamTitle}
             </h2>
             <p className="text-stone-600 text-sm sm:text-base font-medium">
-              Check suspicious SMS, WhatsApp, emails, or fake lottery and electricity disconnect threats before doing anything.
+              {t.modScamDesc}
             </p>
           </div>
         </div>
@@ -101,7 +103,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
         {/* Pre-loaded Sample Scam Messages */}
         <div className="mt-4 pt-4 border-t border-stone-100">
           <p className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-            Try with real-world scam messages sent to seniors:
+            {profile.language === "Hindi"
+              ? "धोखाधड़ी के वास्तविक उदाहरण संदेश (जांचने के लिए टैप करें):"
+              : profile.language === "Spanish"
+              ? "Mensajes de estafa reales enviados a adultos mayores:"
+              : "Try with real-world scam messages sent to seniors:"}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {sampleScams.map((s) => (
@@ -119,12 +125,28 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                     s.isScam ? "text-rose-600" : "text-emerald-700"
                   }`}
                 >
-                  {s.isScam ? "⚠️ Common Scam" : "✅ Safe Alert"}
+                  {s.isScam
+                    ? profile.language === "Hindi"
+                      ? "⚠️ धोखाधड़ी (स्कैम)"
+                      : profile.language === "Spanish"
+                      ? "⚠️ Estafa común"
+                      : "⚠️ Common Scam"
+                    : profile.language === "Hindi"
+                    ? "✅ सुरक्षित अलर्ट"
+                    : profile.language === "Spanish"
+                    ? "✅ Alerta segura"
+                    : "✅ Safe Alert"}
                 </span>
                 <span className="text-xs font-bold text-stone-900 block truncate">
                   {s.type}
                 </span>
-                <span className="text-[11px] text-stone-500">From: {s.sender}</span>
+                <span className="text-[11px] text-stone-500">
+                  {profile.language === "Hindi"
+                    ? `भेजने वाला: ${s.sender}`
+                    : profile.language === "Spanish"
+                    ? `De: ${s.sender}`
+                    : `From: ${s.sender}`}
+                </span>
               </button>
             ))}
           </div>
@@ -135,19 +157,27 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="w-full sm:w-1/3">
               <label className="text-xs font-bold text-stone-700 block mb-1">
-                Sender Phone or Name (Optional):
+                {profile.language === "Hindi"
+                  ? "भेजने वाले का नंबर या नाम (वैकल्पिक):"
+                  : profile.language === "Spanish"
+                  ? "Número o nombre del remitente (opcional):"
+                  : "Sender Phone or Name (Optional):"}
               </label>
               <input
                 type="text"
                 value={senderInfo}
                 onChange={(e) => setSenderInfo(e.target.value)}
-                placeholder="e.g. +1 555-0199 or Unknown"
+                placeholder="e.g. +1 555-0199"
                 className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-800 focus:outline-none focus:border-emerald-600 bg-stone-50/60"
               />
             </div>
             <div className="w-full sm:w-2/3">
               <label className="text-xs font-bold text-stone-700 block mb-1">
-                Message Content (Paste the SMS, WhatsApp or email):
+                {profile.language === "Hindi"
+                  ? "संदेश का पाठ (SMS, WhatsApp या ईमेल यहाँ चिपकाएँ):"
+                  : profile.language === "Spanish"
+                  ? "Contenido del mensaje (pegar SMS o correo):"
+                  : "Message Content (Paste the SMS, WhatsApp or email):"}
               </label>
               <input
                 type="text"
@@ -156,7 +186,13 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                   setMessageText(e.target.value);
                   setSelectedSampleId("");
                 }}
-                placeholder="Paste the suspicious text here..."
+                placeholder={
+                  profile.language === "Hindi"
+                    ? "संदिग्ध संदेश यहाँ पेस्ट करें..."
+                    : profile.language === "Spanish"
+                    ? "Pega el texto sospechoso aquí..."
+                    : "Paste the suspicious text here..."
+                }
                 className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-800 focus:outline-none focus:border-emerald-600 bg-stone-50/60"
               />
             </div>
@@ -169,7 +205,15 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
               className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white font-extrabold text-base transition shadow-md active:scale-95 cursor-pointer min-h-[48px]"
             >
               <ShieldAlert className="w-5 h-5 text-yellow-300" />
-              <span>{isLoading ? "Analyzing Risk..." : "Check If This Is A Scam"}</span>
+              <span>
+                {isLoading
+                  ? t.statusThinking
+                  : profile.language === "Hindi"
+                  ? "जांचें कि क्या यह धोखाधड़ी है"
+                  : profile.language === "Spanish"
+                  ? "Comprobar si es una estafa"
+                  : "Check If This Is A Scam"}
+              </span>
             </button>
           </div>
         </div>
@@ -214,9 +258,21 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                   }`}
                 >
                   {result.verdict === "DANGEROUS_SCAM"
-                    ? "High Danger — Scam Detected"
+                    ? profile.language === "Hindi"
+                      ? "गंभीर खतरा — धोखाधड़ी पाई गई"
+                      : profile.language === "Spanish"
+                      ? "Alto peligro — Estafa detectada"
+                      : "High Danger — Scam Detected"
                     : result.verdict === "CAUTION"
-                    ? "Caution Advised"
+                    ? profile.language === "Hindi"
+                      ? "सावधानी बरतें"
+                      : profile.language === "Spanish"
+                      ? "Precaución"
+                      : "Caution Advised"
+                    : profile.language === "Hindi"
+                    ? "सुरक्षित प्रतीत होता है"
+                    : profile.language === "Spanish"
+                    ? "Parece seguro"
                     : "Looks Safe"}
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-black mt-1 leading-tight">
@@ -235,14 +291,18 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-stone-300 text-stone-800 font-bold text-sm shadow-2xs cursor-pointer min-h-[44px]"
             >
               <Volume2 className="w-4 h-4 text-stone-700" />
-              <span>Read Warning</span>
+              <span>{t.btnListen}</span>
             </button>
           </div>
 
           {/* Explanation in plain words */}
           <div className="p-4 bg-white/90 rounded-2xl border border-stone-200 shadow-2xs">
             <h4 className="font-extrabold text-base text-stone-900 mb-1">
-              Why this message is suspicious:
+              {profile.language === "Hindi"
+                ? "यह संदेश संदिग्ध क्यों है:"
+                : profile.language === "Spanish"
+                ? "¿Por qué este mensaje es sospechoso?:"
+                : "Why this message is suspicious:"}
             </h4>
             <p className="text-base sm:text-lg font-medium text-stone-800 leading-relaxed">
               {result.explanation}
@@ -253,7 +313,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
           {result.redFlags.length > 0 && (
             <div>
               <h4 className="font-extrabold text-sm uppercase tracking-wider text-rose-900 mb-2">
-                Tricks & Red Flags Detected:
+                {profile.language === "Hindi"
+                  ? "पहचाने गए धोखे और खतरे के संकेत:"
+                  : profile.language === "Spanish"
+                  ? "Señales de alerta detectadas:"
+                  : "Tricks & Red Flags Detected:"}
               </h4>
               <div className="space-y-1.5">
                 {result.redFlags.map((flag, idx) => (
@@ -273,7 +337,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
           <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs">
             <h4 className="font-black text-lg text-stone-900 mb-3 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-600" />
-              What You Should Do Right Now:
+              {profile.language === "Hindi"
+                ? "आपको तुरंत क्या करना चाहिए:"
+                : profile.language === "Spanish"
+                ? "Lo que debes hacer ahora mismo:"
+                : "What You Should Do Right Now:"}
             </h4>
             <ol className="space-y-2">
               {result.whatToDo.map((step, idx) => (
@@ -302,10 +370,18 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
             </div>
             <div>
               <h3 className="font-extrabold text-xl text-stone-900">
-                "Before You Pay" Senior Safety Check
+                {profile.language === "Hindi"
+                  ? '"भुगतान करने से पहले" 4 सुरक्षा जांच'
+                  : profile.language === "Spanish"
+                  ? 'Chequeo de seguridad "Antes de pagar"'
+                  : '"Before You Pay" Senior Safety Check'}
               </h3>
               <p className="text-xs text-stone-500 font-medium">
-                Answer these 4 questions before transferring any money
+                {profile.language === "Hindi"
+                  ? "किसी भी पैसे को भेजने से पहले इन 4 सवालों की पुष्टि करें"
+                  : profile.language === "Spanish"
+                  ? "Responde a estas 4 preguntas antes de transferir dinero"
+                  : "Answer these 4 questions before transferring any money"}
               </p>
             </div>
           </div>
@@ -321,7 +397,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
-                1. Do you personally know the person or official receiving the money?
+                {profile.language === "Hindi"
+                  ? "1. क्या आप पैसे प्राप्त करने वाले व्यक्ति या अधिकारी को व्यक्तिगत रूप से जानते हैं?"
+                  : profile.language === "Spanish"
+                  ? "1. ¿Conoces personalmente a la persona u organismo que recibe el dinero?"
+                  : "1. Do you personally know the person or official receiving the money?"}
               </span>
             </label>
 
@@ -335,7 +415,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
-                2. If it's a family member asking for money, did you call them on their regular phone to verify their voice?
+                {profile.language === "Hindi"
+                  ? "2. यदि कोई परिवार का सदस्य पैसे मांग रहा है, तो क्या आपने उनकी आवाज़ की पुष्टि करने के लिए सामान्य फ़ोन कॉल किया?"
+                  : profile.language === "Spanish"
+                  ? "2. Si es un familiar quien pide dinero, ¿le llamaste por teléfono habitual para comprobar su voz?"
+                  : "2. If it's a family member asking for money, did you call them on their regular phone to verify their voice?"}
               </span>
             </label>
 
@@ -349,7 +433,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
-                3. Are you feeling calm and NOT being rushed with threats of "pay within 10 minutes"?
+                {profile.language === "Hindi"
+                  ? '3. क्या आप शांत महसूस कर रहे हैं और "10 मिनट में भुगतान करें" जैसी धमकियों के दबाव में नहीं हैं?'
+                  : profile.language === "Spanish"
+                  ? '3. ¿Te sientes en calma y sin presiones de urgencia como "paga en 10 minutos"?'
+                  : '3. Are you feeling calm and NOT being rushed with threats of "pay within 10 minutes"?'}
               </span>
             </label>
 
@@ -363,7 +451,11 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
-                4. Confirmed that NO ONE has asked for your bank OTP, password, or PIN?
+                {profile.language === "Hindi"
+                  ? "4. पुष्टि है कि किसी ने भी आपका बैंक OTP, पासवर्ड या PIN नहीं माँगा है?"
+                  : profile.language === "Spanish"
+                  ? "4. ¿Confirmas que NADIE te ha pedido tu OTP bancario, contraseña o PIN?"
+                  : "4. Confirmed that NO ONE has asked for your bank OTP, password, or PIN?"}
               </span>
             </label>
           </div>
@@ -377,10 +469,21 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
           >
             {allChecklistPassed ? (
               <span className="flex items-center justify-center gap-1.5">
-                <CheckCircle2 className="w-5 h-5 text-emerald-700" /> All 4 safety checks verified. Safe to proceed with caution.
+                <CheckCircle2 className="w-5 h-5 text-emerald-700" />{" "}
+                {profile.language === "Hindi"
+                  ? "सभी 4 सुरक्षा जांच पूरी हुईं। सावधानी से आगे बढ़ सकते हैं।"
+                  : profile.language === "Spanish"
+                  ? "Las 4 comprobaciones verificadas. Seguro para continuar con precaución."
+                  : "All 4 safety checks verified. Safe to proceed with caution."}
               </span>
             ) : (
-              <span>⚠️ Complete all 4 checkmarks above before sending any payment.</span>
+              <span>
+                {profile.language === "Hindi"
+                  ? "⚠️ कोई भी भुगतान करने से पहले ऊपर दिए गए चारों बिंदुओं पर टिक करें।"
+                  : profile.language === "Spanish"
+                  ? "⚠️ Marca las 4 casillas antes de realizar cualquier transferencia."
+                  : "⚠️ Complete all 4 checkmarks above before sending any payment."}
+              </span>
             )}
           </div>
         </div>
@@ -389,34 +492,78 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
         <div className="bg-gradient-to-br from-emerald-800 via-emerald-700 to-stone-900 text-white p-6 sm:p-7 rounded-3xl shadow-md flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-emerald-200 text-xs font-black uppercase tracking-wider mb-2">
-              <Lock className="w-4 h-4" /> Lifetime Golden Rule
+              <Lock className="w-4 h-4" />{" "}
+              {profile.language === "Hindi"
+                ? "जीवन भर का स्वर्णिम नियम"
+                : profile.language === "Spanish"
+                ? "Regla de oro de por vida"
+                : "Lifetime Golden Rule"}
             </div>
             <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
-              The Golden Rule of Your Bank OTP & PIN
+              {profile.language === "Hindi"
+                ? "बैंक OTP और PIN का स्वर्णिम नियम"
+                : profile.language === "Spanish"
+                ? "La regla de oro de tu OTP y PIN bancario"
+                : "The Golden Rule of Your Bank OTP & PIN"}
             </h3>
             <p className="text-emerald-100 text-base sm:text-lg mt-3 leading-relaxed font-medium">
-              No real bank manager, police officer, or government official will{" "}
-              <span className="font-black text-emerald-300 underline">EVER</span> call or message you asking for:
+              {profile.language === "Hindi" ? (
+                <>
+                  कोई भी वास्तविक बैंक प्रबंधक, पुलिस अधिकारी या सरकारी कर्मचारी कभी भी आपसे ये चीज़ें नहीं माँगेगा:
+                </>
+              ) : profile.language === "Spanish" ? (
+                <>
+                  Ningún director de banco, policía o funcionario te pedirá{" "}
+                  <span className="font-black text-emerald-300 underline">JAMÁS</span> por teléfono:
+                </>
+              ) : (
+                <>
+                  No real bank manager, police officer, or government official will{" "}
+                  <span className="font-black text-emerald-300 underline">EVER</span> call or message you asking for:
+                </>
+              )}
             </p>
 
             <ul className="mt-4 space-y-2 text-sm sm:text-base font-bold text-white">
               <li className="flex items-center gap-2">
                 <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
-                <span>Your 4 or 6 digit OTP SMS code</span>
+                <span>
+                  {profile.language === "Hindi"
+                    ? "आपका 4 या 6 अंकों का OTP SMS कोड"
+                    : profile.language === "Spanish"
+                    ? "Tu código OTP de 4 o 6 dígitos por SMS"
+                    : "Your 4 or 6 digit OTP SMS code"}
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
-                <span>Your ATM or Net Banking Password</span>
+                <span>
+                  {profile.language === "Hindi"
+                    ? "आपका ATM या नेट बैंकिंग पासवर्ड"
+                    : profile.language === "Spanish"
+                    ? "Tu contraseña de cajero o banca online"
+                    : "Your ATM or Net Banking Password"}
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
-                <span>Your 3-digit CVV on the back of your card</span>
+                <span>
+                  {profile.language === "Hindi"
+                    ? "कार्ड के पीछे का 3 अंकों वाला CVV नंबर"
+                    : profile.language === "Spanish"
+                    ? "El código CVV de 3 dígitos detrás de tu tarjeta"
+                    : "Your 3-digit CVV on the back of your card"}
+                </span>
               </li>
             </ul>
           </div>
 
           <div className="mt-6 pt-4 border-t border-emerald-600/30 text-xs text-emerald-200 font-medium">
-            If anyone asks for these numbers over phone or WhatsApp, hang up immediately and tell your family or Mitraa.
+            {profile.language === "Hindi"
+              ? "यदि कोई भी फ़ोन या व्हाट्सएप पर यह नंबर मांगे, तो तुरंत फ़ोन काट दें और अपने परिवार या मित्रा को बताएं।"
+              : profile.language === "Spanish"
+              ? "Si alguien te pide estos números por llamada o WhatsApp, cuelga de inmediato y avisa a tu familia o a Mitraa."
+              : "If anyone asks for these numbers over phone or WhatsApp, hang up immediately and tell your family or Mitraa."}
           </div>
         </div>
       </div>

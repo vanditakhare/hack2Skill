@@ -1,12 +1,39 @@
 // Web Speech API wrapper for senior-friendly voice interaction
 
+export const LANGUAGE_BCP47_MAP: Record<string, string> = {
+  English: "en-US",
+  Hindi: "hi-IN",
+  Spanish: "es-ES",
+  Tamil: "ta-IN",
+  Bengali: "bn-IN",
+  Telugu: "te-IN",
+  Marathi: "mr-IN",
+  Gujarati: "gu-IN",
+};
+
+export const getLanguageCode = (lang?: string): string => {
+  if (!lang) return "en-US";
+  return LANGUAGE_BCP47_MAP[lang] || lang;
+};
+
 class SpeechHelper {
   private synth: SpeechSynthesis | null = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
+  private voices: SpeechSynthesisVoice[] = [];
 
   constructor() {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       this.synth = window.speechSynthesis;
+      this.loadVoices();
+      if (this.synth.onvoiceschanged !== undefined) {
+        this.synth.onvoiceschanged = () => this.loadVoices();
+      }
+    }
+  }
+
+  private loadVoices() {
+    if (this.synth) {
+      this.voices = this.synth.getVoices();
     }
   }
 
@@ -44,13 +71,17 @@ class SpeechHelper {
     utterance.rate = options?.rate || 0.88; // Slightly gentle, senior-friendly pace
     utterance.pitch = options?.pitch || 1.0;
 
+    const bcp47 = getLanguageCode(options?.language);
+    utterance.lang = bcp47;
+
     // Pick appropriate voice for language if available
-    const voices = this.synth.getVoices();
+    const voices = this.voices.length > 0 ? this.voices : this.synth.getVoices();
     if (options?.language) {
-      const langPrefix = options.language.toLowerCase().slice(0, 2);
-      const matchedVoice = voices.find((v) =>
-        v.lang.toLowerCase().startsWith(langPrefix)
-      );
+      const langPrefix = bcp47.toLowerCase().slice(0, 2);
+      const matchedVoice =
+        voices.find((v) => v.lang.toLowerCase().replace("_", "-") === bcp47.toLowerCase()) ||
+        voices.find((v) => v.lang.toLowerCase().startsWith(langPrefix));
+
       if (matchedVoice) {
         utterance.voice = matchedVoice;
       }
@@ -138,7 +169,7 @@ export const createSpeechRecognizer = (
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = true;
-    recognition.lang = language;
+    recognition.lang = getLanguageCode(language);
 
     recognition.onresult = (event: any) => {
       let interimTranscript = "";

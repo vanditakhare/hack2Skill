@@ -44,6 +44,7 @@ import { CompanionPersonalization } from "./components/CompanionPersonalization"
 import { EmergencyModal } from "./components/EmergencyModal";
 import { LoginPage } from "./components/LoginPage";
 import { speechHelper, playCalmChime } from "./utils/speech";
+import { getTranslation } from "./utils/translations";
 
 export default function App() {
   const [profile, setProfile] = useState<SeniorProfile>(() => {
@@ -57,6 +58,8 @@ export default function App() {
     }
     return initialSeniorProfile;
   });
+
+  const t = getTranslation(profile.language);
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     try {
@@ -75,18 +78,18 @@ export default function App() {
   const [vitals, setVitals] = useState<VitalLog[]>(initialVitals);
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [breathingActive, setBreathingActive] = useState<boolean>(false);
-  const [breathingText, setBreathingText] = useState<string>("Gently Breathe In...");
+  const [breathingText, setBreathingText] = useState<string>(t.breathIn);
 
   const handleStartBreathing = () => {
     playCalmChime();
     setBreathingActive(true);
-    setBreathingText("Gently Breathe In (1, 2, 3, 4)...");
+    setBreathingText(t.breathIn);
     setTimeout(() => {
-      setBreathingText("Hold Gently (1, 2, 3, 4)...");
+      setBreathingText(t.breathHold);
       setTimeout(() => {
-        setBreathingText("Slowly Breathe Out (1, 2, 3, 4)...");
+        setBreathingText(t.breathOut);
         setTimeout(() => {
-          setBreathingText("Rest & Feel at Peace...");
+          setBreathingText(t.breathRest);
           setTimeout(() => {
             setBreathingActive(false);
           }, 3000);
@@ -122,26 +125,27 @@ export default function App() {
 
   const getGreetingData = () => {
     const hour = new Date().getHours();
+    const honorific = profile.preferredHonorific || profile.name;
     if (hour < 12) {
       return {
-        greeting: `Subha Prabhat, ${profile.preferredHonorific || profile.name}`,
-        period: "Morning Sunrise",
+        greeting: `${t.morningGreeting}, ${honorific}`,
+        period: t.timeMorning,
         icon: <Sun className="w-5 h-5 text-amber-600" />,
-        guidance: "A peaceful morning has arrived. Drink warm water, stretch your legs, and let us start the day with calmness.",
+        guidance: t.morningGuidance,
       };
     } else if (hour < 17) {
       return {
-        greeting: `Shubh Madhyahan, ${profile.preferredHonorific || profile.name}`,
-        period: "Golden Afternoon",
+        greeting: `${t.afternoonGreeting}, ${honorific}`,
+        period: t.timeAfternoon,
         icon: <Sun className="w-5 h-5 text-orange-600" />,
-        guidance: "Rest your eyes, stay hydrated, and enjoy soothing music, reading, or a quiet pause.",
+        guidance: t.afternoonGuidance,
       };
     } else {
       return {
-        greeting: `Shubh Sandhya, ${profile.preferredHonorific || profile.name}`,
-        period: "Peaceful Twilight",
+        greeting: `${t.eveningGreeting}, ${honorific}`,
+        period: t.timeEvening,
         icon: <Moon className="w-5 h-5 text-indigo-500" />,
-        guidance: "The evening lamps are lit. Spend a gentle moment connecting with family, resting your feet, and taking evening medicines.",
+        guidance: t.eveningGuidance,
       };
     }
   };
@@ -149,9 +153,8 @@ export default function App() {
   const sanctuaryDomains = [
     {
       id: "care",
-      title: "Care & Daily Vitality",
-      hindi: "स्वास्थ्य व दिनचर्या",
-      tagline: "Your medicines, gentle daily rhythm, and conversational companion",
+      title: t.domainCareTitle,
+      tagline: t.domainCareTagline,
       accentBorder: "border-emerald-200/90 hover:border-emerald-400",
       accentBg: "bg-emerald-50/40",
       iconBg: "bg-emerald-100 text-emerald-800",
@@ -159,38 +162,50 @@ export default function App() {
       modules: [
         {
           id: "companion" as ModuleTab,
-          name: "Mitraa Voice Companion",
-          badge: "AI Caring Friend",
+          name: t.modVoiceCompanionTitle,
+          badge: t.modVoiceCompanionBadge,
           badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300",
-          desc: "Speak naturally in your language. Ask about your day, health advice, or hear a comforting story.",
+          desc: t.modVoiceCompanionDesc,
           icon: <MessageCircleHeart className="w-5 h-5 text-emerald-700" />,
-          action: "Talk with Mitraa",
+          action: t.modVoiceCompanionAction,
         },
         {
           id: "health" as ModuleTab,
-          name: "Medicines & Health Log",
-          badge: pendingMedicinesCount > 0 ? `${pendingMedicinesCount} dose pending` : "All doses taken",
-          badgeColor: pendingMedicinesCount > 0 ? "bg-amber-100 text-amber-950 border-amber-300" : "bg-emerald-100 text-emerald-900 border-emerald-300",
-          desc: "Visual pillbox with photos, reminder alarms, doctor appointments, and BP/Sugar log.",
+          name: t.modHealthTitle,
+          badge:
+            pendingMedicinesCount > 0
+              ? `${pendingMedicinesCount} ${
+                  pendingMedicinesCount === 1 ? t.dosePending : t.dosesPending
+                }`
+              : t.allDosesTaken,
+          badgeColor:
+            pendingMedicinesCount > 0
+              ? "bg-amber-100 text-amber-950 border-amber-300"
+              : "bg-emerald-100 text-emerald-900 border-emerald-300",
+          desc: t.modHealthDesc,
           icon: <Pill className="w-5 h-5 text-emerald-700" />,
-          action: "Open Pillbox",
+          action: t.modHealthAction,
         },
         {
           id: "daily" as ModuleTab,
-          name: "Daily Routine & Schedule",
-          badge: pendingTasksCount > 0 ? `${pendingTasksCount} tasks remaining` : "All done today",
+          name: t.modDailyTitle,
+          badge:
+            pendingTasksCount > 0
+              ? `${pendingTasksCount} ${
+                  pendingTasksCount === 1 ? t.taskRemaining : t.tasksRemaining
+                }`
+              : t.allDoneToday,
           badgeColor: "bg-stone-100 text-stone-800 border-stone-200",
-          desc: "Paced day organizer: morning walk, prayer, hydration, family calls, and relaxing nap times.",
+          desc: t.modDailyDesc,
           icon: <CalendarCheck className="w-5 h-5 text-emerald-700" />,
-          action: "View Schedule",
+          action: t.modDailyAction,
         },
       ],
     },
     {
       id: "safety",
-      title: "Peace of Mind & Safety",
-      hindi: "सुरक्षा व सतर्कता",
-      tagline: "Scam protection, plain-language letters, and immediate emergency help",
+      title: t.domainSafetyTitle,
+      tagline: t.domainSafetyTagline,
       accentBorder: "border-emerald-200/90 hover:border-emerald-400",
       accentBg: "bg-emerald-50/30",
       iconBg: "bg-emerald-100 text-emerald-900",
@@ -198,39 +213,38 @@ export default function App() {
       modules: [
         {
           id: "scam" as ModuleTab,
-          name: "Scam & Fraud Shield",
-          badge: "Shield Active",
+          name: t.modScamTitle,
+          badge: t.modScamBadge,
           badgeColor: "bg-rose-100 text-rose-900 border-rose-300",
-          desc: "Instant safety check for suspicious SMS, lottery calls, bank threats, and fake electricity cutoffs.",
+          desc: t.modScamDesc,
           icon: <ShieldAlert className="w-5 h-5 text-rose-700" />,
-          action: "Verify Scam SMS",
+          action: t.modScamAction,
         },
         {
           id: "document" as ModuleTab,
-          name: "Letter & Document Simplifier",
-          badge: "5th-Grade Simple",
+          name: t.modDocTitle,
+          badge: t.modDocBadge,
           badgeColor: "bg-emerald-100 text-emerald-950 border-emerald-300",
-          desc: "Translates dense hospital discharge reports, utility notices, and insurance letters into simple words.",
+          desc: t.modDocDesc,
           icon: <FileText className="w-5 h-5 text-emerald-800" />,
-          action: "Simplify Document",
+          action: t.modDocAction,
         },
         {
           id: "emergency" as any,
-          name: "Emergency SOS Siren",
-          badge: "One-Touch Alert",
+          name: t.modEmergencyTitle,
+          badge: t.modEmergencyBadge,
           badgeColor: "bg-rose-600 text-white",
-          desc: "Immediately alerts primary family caregiver and dials local ambulance or senior helpline.",
+          desc: t.modEmergencyDesc,
           icon: <AlertOctagon className="w-5 h-5 text-rose-600" />,
-          action: "Trigger Siren",
+          action: t.modEmergencyAction,
           isEmergency: true,
         },
       ],
     },
     {
       id: "life",
-      title: "Connection & Everyday Life",
-      hindi: "परिवार व दैनिक जीवन",
-      tagline: "Stay close to family, navigate digital services, and enjoy peaceful leisure",
+      title: t.domainLifeTitle,
+      tagline: t.domainLifeTagline,
       accentBorder: "border-sky-200/90 hover:border-sky-400",
       accentBg: "bg-sky-50/40",
       iconBg: "bg-sky-100 text-sky-900",
@@ -238,39 +252,39 @@ export default function App() {
       modules: [
         {
           id: "family" as ModuleTab,
-          name: "Family Circle & Caregiver",
-          badge: "Caregiver Sync",
+          name: t.modFamilyTitle,
+          badge: t.modFamilyBadge,
           badgeColor: "bg-sky-100 text-sky-950 border-sky-300",
-          desc: "Share daily voice notes, view grandchild photos, and send one-tap 'I am safe' updates.",
+          desc: t.modFamilyDesc,
           icon: <Users className="w-5 h-5 text-sky-700" />,
-          action: "Open Family Hub",
+          action: t.modFamilyAction,
         },
         {
           id: "tasks" as ModuleTab,
-          name: "Easy Digital Task Guides",
-          badge: "Step-by-Step",
+          name: t.modTasksTitle,
+          badge: t.modTasksBadge,
           badgeColor: "bg-stone-100 text-stone-800 border-stone-200",
-          desc: "Large screenshot walkthroughs for booking an Uber, ordering groceries, and WhatsApp calls.",
+          desc: t.modTasksDesc,
           icon: <MousePointerClick className="w-5 h-5 text-sky-700" />,
-          action: "Start Tutorial",
+          action: t.modTasksAction,
         },
         {
           id: "finance" as ModuleTab,
-          name: "Bills & Pension Assistant",
-          badge: "Due Date Tracker",
+          name: t.modFinanceTitle,
+          badge: t.modFinanceBadge,
           badgeColor: "bg-emerald-100 text-emerald-950 border-emerald-300",
-          desc: "Large-print utility bills, pension reminders, and Jeevan Pramaan submission guide.",
+          desc: t.modFinanceDesc,
           icon: <DollarSign className="w-5 h-5 text-emerald-800" />,
-          action: "View Bills",
+          action: t.modFinanceAction,
         },
         {
           id: "personal" as ModuleTab,
-          name: "Peaceful Leisure & Mind Gym",
-          badge: "Relaxation",
+          name: t.modPersonalTitle,
+          badge: t.modPersonalBadge,
           badgeColor: "bg-purple-100 text-purple-950 border-purple-300",
-          desc: "Positive daily news summaries, relaxing ragas, stories, and gentle memory puzzles.",
+          desc: t.modPersonalDesc,
           icon: <Sparkles className="w-5 h-5 text-purple-700" />,
-          action: "Relax & Play",
+          action: t.modPersonalAction,
         },
       ],
     },
@@ -322,7 +336,15 @@ export default function App() {
   };
 
   const handleUpdateProfile = (updated: Partial<SeniorProfile>) => {
-    setProfile((prev) => ({ ...prev, ...updated }));
+    setProfile((prev) => {
+      const next = { ...prev, ...updated };
+      try {
+        localStorage.setItem("mitraa_active_profile", JSON.stringify(next));
+      } catch (e) {
+        console.error("Failed to save profile update", e);
+      }
+      return next;
+    });
   };
 
   // Nav Items for all modules
@@ -334,49 +356,52 @@ export default function App() {
   }[] = [
     {
       id: "companion",
-      label: "Mitraa Voice Companion",
+      label: t.modVoiceCompanionTitle,
       icon: <MessageCircleHeart className="w-5 h-5 text-emerald-700" />,
     },
     {
       id: "daily",
-      label: "Daily Schedule & Tasks",
+      label: t.modDailyTitle,
       icon: <CalendarCheck className="w-5 h-5 text-emerald-700" />,
       badge: pendingTasksCount > 0 ? `${pendingTasksCount}` : undefined,
     },
     {
       id: "document",
-      label: "Document Simplifier",
+      label: t.modDocTitle,
       icon: <FileText className="w-5 h-5 text-emerald-700" />,
     },
     {
       id: "tasks",
-      label: "Digital Task Guide",
+      label: t.modTasksTitle,
       icon: <MousePointerClick className="w-5 h-5 text-emerald-700" />,
     },
     {
       id: "scam",
-      label: "Scam & Safety Shield",
+      label: t.modScamTitle,
       icon: <ShieldAlert className="w-5 h-5 text-rose-600" />,
     },
     {
       id: "health",
-      label: "Medicines & Health",
+      label: t.modHealthTitle,
       icon: <HeartPulse className="w-5 h-5 text-emerald-600" />,
-      badge: pendingMedicinesCount > 0 ? `${pendingMedicinesCount} pending` : "Done",
+      badge:
+        pendingMedicinesCount > 0
+          ? `${pendingMedicinesCount} ${t.dosePending}`
+          : undefined,
     },
     {
       id: "family",
-      label: "Family & Caregiver",
+      label: t.modFamilyTitle,
       icon: <Users className="w-5 h-5 text-blue-600" />,
     },
     {
       id: "finance",
-      label: "Bills & Finance",
+      label: t.modFinanceTitle,
       icon: <DollarSign className="w-5 h-5 text-emerald-700" />,
     },
     {
       id: "personal",
-      label: "News & Preferences",
+      label: t.modPersonalTitle,
       icon: <Sparkles className="w-5 h-5 text-purple-600" />,
     },
   ];
@@ -421,12 +446,12 @@ export default function App() {
               }`}
             >
               <Home className="w-4 h-4" />
-              <span>Sanctuary Deck</span>
+              <span>{t.btnSanctuaryDeck}</span>
             </button>
 
             {viewMode === "module" && (
               <span className="hidden sm:inline-flex text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                Active Module: {navItems.find((n) => n.id === activeTab)?.label}
+                {t.btnActiveModule}: {navItems.find((n) => n.id === activeTab)?.label}
               </span>
             )}
           </div>
@@ -439,21 +464,36 @@ export default function App() {
               title="Play peaceful chime and take a calming breath"
             >
               <Wind className="w-4 h-4 text-teal-700" />
-              <span>Calm Breath</span>
+              <span>{t.btnCalmBreath}</span>
             </button>
 
             <button
               type="button"
               onClick={() => {
-                speechHelper.speak(
-                  `Namaste ${profile.preferredHonorific}. You have ${pendingMedicinesCount} medicines pending and ${pendingTasksCount} schedule activities remaining. Tap any sanctuary card to begin.`,
-                  { rate: profile.voiceSpeed, language: profile.language }
-                );
+                const briefingText = `${t.morningGreeting} ${
+                  profile.preferredHonorific || profile.name
+                }. ${
+                  pendingMedicinesCount > 0
+                    ? `${pendingMedicinesCount} ${
+                        pendingMedicinesCount === 1 ? t.dosePending : t.dosesPending
+                      }.`
+                    : `${t.allDosesTaken}.`
+                } ${
+                  pendingTasksCount > 0
+                    ? `${pendingTasksCount} ${
+                        pendingTasksCount === 1 ? t.taskRemaining : t.tasksRemaining
+                      }.`
+                    : `${t.allDoneToday}.`
+                }`;
+                speechHelper.speak(briefingText, {
+                  rate: profile.voiceSpeed,
+                  language: profile.language,
+                });
               }}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 text-xs sm:text-sm font-bold transition cursor-pointer min-h-[42px]"
             >
               <Volume2 className="w-4 h-4 text-emerald-700" />
-              <span>Briefing</span>
+              <span>{t.btnDaySummary}</span>
             </button>
           </div>
         </div>
@@ -470,7 +510,7 @@ export default function App() {
                   {breathingText}
                 </h3>
                 <p className="text-xs sm:text-sm text-teal-800 font-medium">
-                  Follow the gentle bell. Inhale calmness, exhale all strain.
+                  {t.reassuranceCalm}
                 </p>
               </div>
             </div>
@@ -479,7 +519,7 @@ export default function App() {
               onClick={() => setBreathingActive(false)}
               className="px-4 py-2 rounded-2xl bg-teal-100 hover:bg-teal-200 text-teal-900 font-bold text-xs sm:text-sm transition cursor-pointer"
             >
-              Close Guide
+              {t.btnBack}
             </button>
           </div>
         )}
@@ -500,7 +540,7 @@ export default function App() {
                           <span>{greetingInfo.period}</span>
                         </span>
                         <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                          Mitraa AI Active
+                          {t.statusActive}
                         </span>
                       </div>
                       <h1 className="font-display text-2xl sm:text-4xl font-bold text-emerald-950 tracking-tight">
@@ -523,7 +563,7 @@ export default function App() {
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 hover:from-emerald-900 hover:to-teal-900 text-white font-bold text-base shadow-md transition active:scale-95 cursor-pointer min-h-[54px]"
                       >
                         <MessageCircleHeart className="w-5 h-5 text-emerald-200" />
-                        <span>Speak with Mitraa</span>
+                        <span>{t.modVoiceCompanionAction}</span>
                       </button>
 
                       <button
@@ -532,7 +572,7 @@ export default function App() {
                         className="flex items-center justify-center gap-2 px-4 py-4 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-800 font-bold text-sm sm:text-base transition cursor-pointer min-h-[54px]"
                       >
                         <AlertOctagon className="w-5 h-5 text-rose-600" />
-                        <span>Emergency SOS</span>
+                        <span>{t.emergencySOS}</span>
                       </button>
                     </div>
                   </div>
@@ -556,12 +596,14 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="font-bold text-base text-stone-900">
-                      Medicines & Doses
+                      {t.modHealthTitle}
                     </h3>
                     <p className="text-xs text-stone-500 font-medium">
                       {pendingMedicinesCount > 0
-                        ? `${pendingMedicinesCount} dose(s) pending today`
-                        : "All daily medicines taken!"}
+                        ? `${pendingMedicinesCount} ${
+                            pendingMedicinesCount === 1 ? t.dosePending : t.dosesPending
+                          }`
+                        : t.allDosesTaken}
                     </p>
                   </div>
                 </div>
@@ -582,12 +624,12 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="font-bold text-base text-stone-900">
-                      Day Routine
+                      {t.modDailyTitle}
                     </h3>
                     <p className="text-xs text-stone-500 font-medium truncate max-w-[170px]">
                       {nextScheduledItem
                         ? `${nextScheduledItem.time}: ${nextScheduledItem.title}`
-                        : "Routine completed for today"}
+                        : t.allDoneToday}
                     </p>
                   </div>
                 </div>
@@ -608,10 +650,10 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="font-bold text-base text-stone-900">
-                      Fraud Shield
+                      {t.modScamTitle}
                     </h3>
                     <p className="text-xs text-stone-500 font-medium">
-                      Active • Contact: {profile.emergencyContact?.name || "Priya Sharma"}
+                      {t.statusActive} • {profile.emergencyContact?.name || "Priya Sharma"}
                     </p>
                   </div>
                 </div>
@@ -643,14 +685,9 @@ export default function App() {
                           {domain.icon}
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-display text-xl sm:text-2xl font-bold text-stone-900">
-                              {domain.title}
-                            </h3>
-                            <span className="text-xs font-bold text-stone-500">
-                              ({domain.hindi})
-                            </span>
-                          </div>
+                          <h3 className="font-display text-xl sm:text-2xl font-bold text-stone-900">
+                            {domain.title}
+                          </h3>
                           <p className="text-xs sm:text-sm text-stone-600 font-medium">
                             {domain.tagline}
                           </p>
@@ -721,11 +758,11 @@ export default function App() {
                   className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 font-bold text-sm border border-emerald-300 transition cursor-pointer min-h-[44px]"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>Return to Sanctuary Deck</span>
+                  <span>{t.btnBack} ({t.btnSanctuaryDeck})</span>
                 </button>
 
                 <div className="hidden sm:block">
-                  <p className="text-xs text-stone-500 font-medium">Current Tool</p>
+                  <p className="text-xs text-stone-500 font-medium">{t.btnActiveModule}</p>
                   <h3 className="font-bold text-base text-stone-900">
                     {navItems.find((n) => n.id === activeTab)?.label}
                   </h3>
@@ -789,6 +826,12 @@ export default function App() {
           {activeTab === "companion" && (
             <VoiceCompanion
               profile={profile}
+              seniorContextSummary={`Senior Name: ${profile.name} (Prefers: ${profile.preferredHonorific}), Age: ${profile.age}.
+Prescribed Medicines: ${medicines.map((m) => `${m.name} (${m.dosage}, ${m.timeSlot}, taken today: ${m.takenToday ? "Yes" : "No"})`).join("; ")}.
+Today's Schedule: ${schedule.map((s) => `${s.time} - ${s.title} (${s.completed ? "Done" : "Pending"})`).join("; ")}.
+Doctor: Dr. ${profile.primaryDoctor} (${profile.doctorPhone}).
+Emergency Contact: ${profile.emergencyContact.name} (${profile.emergencyContact.relation}, ${profile.emergencyContact.phone}).
+Known Conditions: ${profile.medicalConditions.join(", ") || "None"}.`}
               onNavigateModule={(mod) => {
                 if (mod === "emergency") {
                   setShowEmergencyModal(true);
