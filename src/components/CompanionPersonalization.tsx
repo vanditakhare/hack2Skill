@@ -167,7 +167,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             onClick={() => setActiveTab("news")}
             className={`px-5 py-2.5 rounded-2xl font-bold text-sm sm:text-base transition active:scale-95 cursor-pointer min-h-[44px] ${
               activeTab === "news"
-                ? "bg-amber-700 text-white shadow-xs"
+                ? "bg-emerald-700 text-white shadow-xs"
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
@@ -178,7 +178,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             onClick={() => setActiveTab("brain")}
             className={`px-5 py-2.5 rounded-2xl font-bold text-sm sm:text-base transition active:scale-95 cursor-pointer min-h-[44px] ${
               activeTab === "brain"
-                ? "bg-amber-700 text-white shadow-xs"
+                ? "bg-emerald-700 text-white shadow-xs"
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
@@ -189,7 +189,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             onClick={() => setActiveTab("relax")}
             className={`px-5 py-2.5 rounded-2xl font-bold text-sm sm:text-base transition active:scale-95 cursor-pointer min-h-[44px] ${
               activeTab === "relax"
-                ? "bg-amber-700 text-white shadow-xs"
+                ? "bg-emerald-700 text-white shadow-xs"
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
@@ -200,7 +200,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             onClick={() => setActiveTab("settings")}
             className={`px-5 py-2.5 rounded-2xl font-bold text-sm sm:text-base transition active:scale-95 cursor-pointer min-h-[44px] ${
               activeTab === "settings"
-                ? "bg-amber-700 text-white shadow-xs"
+                ? "bg-emerald-700 text-white shadow-xs"
                 : "text-stone-600 hover:bg-stone-100"
             }`}
           >
@@ -229,9 +229,9 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                       language: profile.language,
                     })
                   }
-                  className="flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-xl border border-amber-200 cursor-pointer min-h-[38px]"
+                  className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 cursor-pointer min-h-[38px]"
                 >
-                  <Volume2 className="w-3.5 h-3.5 text-amber-700" />
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
                   <span>Listen to Story</span>
                 </button>
               </div>
@@ -251,7 +251,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
       {activeTab === "brain" && (
         <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs space-y-6 animate-fadeIn">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
@@ -264,8 +264,8 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-amber-50/70 border-2 border-amber-200 space-y-4">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-900">
+          <div className="p-6 rounded-3xl bg-emerald-50/70 border-2 border-emerald-200 space-y-4">
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-900">
               Riddle of the Day:
             </span>
             <p className="text-xl sm:text-2xl font-extrabold text-stone-900 leading-relaxed">
@@ -275,7 +275,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             <div className="pt-2">
               <button
                 onClick={() => setShowRiddleAnswer(!showRiddleAnswer)}
-                className="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-extrabold text-sm transition active:scale-95 cursor-pointer shadow-xs min-h-[44px]"
+                className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-sm transition active:scale-95 cursor-pointer shadow-xs min-h-[44px]"
               >
                 {showRiddleAnswer ? "Hide Answer" : "Reveal Answer"}
               </button>
@@ -295,7 +295,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
       {activeTab === "relax" && (
         <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs space-y-6 animate-fadeIn text-center">
           <div className="max-w-md mx-auto space-y-3">
-            <div className="w-20 h-20 rounded-3xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto font-bold shadow-sm">
+            <div className="w-20 h-20 rounded-3xl bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto font-bold shadow-sm">
               <Music className="w-10 h-10 animate-pulse" />
             </div>
             <h3 className="text-2xl sm:text-3xl font-black text-stone-900">
@@ -317,7 +317,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
               ) : (
                 <button
                   onClick={startAmbientMelody}
-                  className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-black text-lg shadow-md transition active:scale-95 cursor-pointer min-h-[52px]"
+                  className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-lg shadow-md transition active:scale-95 cursor-pointer min-h-[52px]"
                 >
                   <Play className="w-6 h-6" />
                   <span>Play Soothing Music</span>
@@ -326,7 +326,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
             </div>
 
             {isPlayingMelody && (
-              <p className="text-xs font-bold text-amber-800 animate-pulse pt-2">
+              <p className="text-xs font-bold text-emerald-800 animate-pulse pt-2">
                 🎵 Playing relaxing soft chime tones... take a deep breath and relax.
               </p>
             )}
@@ -354,7 +354,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-amber-600"
+                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-emerald-600"
                 />
               </div>
 
@@ -367,7 +367,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                   value={editHonorific}
                   onChange={(e) => setEditHonorific(e.target.value)}
                   placeholder="e.g. Ashaji, Dadaji, Grandpa, Mrs. Sharma"
-                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-amber-600"
+                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-emerald-600"
                 />
               </div>
 
@@ -378,7 +378,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 <select
                   value={editLanguage}
                   onChange={(e) => setEditLanguage(e.target.value as Language)}
-                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-amber-600 bg-white"
+                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-emerald-600 bg-white"
                 >
                   <option value="English">English</option>
                   <option value="Hindi">Hindi (हिंदी)</option>
@@ -398,7 +398,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 <select
                   value={editTextSize}
                   onChange={(e) => setEditTextSize(e.target.value as TextSize)}
-                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-amber-600 bg-white"
+                  className="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-900 focus:outline-none focus:border-emerald-600 bg-white"
                 >
                   <option value="normal">Medium (Standard)</option>
                   <option value="large">Large (Recommended for Seniors)</option>
@@ -424,7 +424,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 step="0.05"
                 value={editSpeed}
                 onChange={(e) => setEditSpeed(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-stone-200 rounded-lg"
+                className="w-full accent-emerald-700 cursor-pointer h-2 bg-stone-200 rounded-lg"
               />
             </div>
 
@@ -442,7 +442,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
                 type="checkbox"
                 checked={editContrast}
                 onChange={(e) => setEditContrast(e.target.checked)}
-                className="w-6 h-6 accent-amber-600 rounded cursor-pointer"
+                className="w-6 h-6 accent-emerald-700 rounded cursor-pointer"
               />
             </div>
 
@@ -457,7 +457,7 @@ export const CompanionPersonalization: React.FC<CompanionPersonalizationProps> =
 
               <button
                 type="submit"
-                className="flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-extrabold text-base shadow-md transition active:scale-95 cursor-pointer min-h-[48px]"
+                className="flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-base shadow-md transition active:scale-95 cursor-pointer min-h-[48px]"
               >
                 <Save className="w-5 h-5" />
                 <span>Save Preferences</span>

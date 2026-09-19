@@ -125,29 +125,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col justify-center items-center py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f7faf8] flex flex-col justify-center items-center py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl w-full">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-amber-600 text-white shadow-lg text-4xl font-black mb-3 border-2 border-amber-500">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 text-white shadow-lg text-4xl font-bold mb-3 border-2 border-emerald-400/40 animate-companion-pulse">
             मि
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-amber-950 tracking-tight">
-            Mitraa <span className="text-2xl font-bold text-amber-700">(मित्रा)</span>
+          <h1 className="font-display text-4xl sm:text-5xl font-bold text-emerald-950 tracking-tight">
+            Mitraa
+            <span className="font-sans text-2xl font-normal text-emerald-800 ml-2.5">(मित्रा)</span>
           </h1>
-          <p className="text-base sm:text-lg text-stone-600 font-medium mt-1">
-            Senior Care Daily AI Companion
+          <p className="font-serif italic text-lg sm:text-xl text-emerald-900/80 mt-1">
+            "A caring companion for every grandparent & elder"
           </p>
-          <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300">
+          <div className="inline-flex items-center gap-2 mt-3 px-4 py-1.5 rounded-full bg-emerald-100/90 text-emerald-950 text-xs font-bold border border-emerald-300 shadow-2xs">
             <ShieldCheck className="w-4 h-4 text-emerald-700" />
-            <span>Gentle • Accessible • Private & Secure</span>
+            <span>Gentle • Accessible • Private • Dignified Care</span>
           </div>
         </div>
 
         {/* Card Container */}
-        <div className="bg-white rounded-3xl shadow-xl border border-stone-200 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-xl border border-[#dce7de] overflow-hidden">
           {/* Mode Switcher */}
-          <div className="grid grid-cols-2 p-2 bg-stone-100 border-b border-stone-200">
+          <div className="grid grid-cols-2 p-2 bg-[#f0f5f1] border-b border-[#dce7de]">
             <button
               type="button"
               id="login-tab-preset"
@@ -157,11 +158,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               }}
               className={`py-3 px-4 rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer ${
                 loginMode === "preset"
-                  ? "bg-white text-amber-900 shadow-sm border border-stone-200"
-                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/60"
+                  ? "bg-white text-emerald-950 shadow-sm border border-[#cbe0cf]"
+                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/50"
               }`}
             >
-              <Users className="w-5 h-5 text-amber-700" />
+              <Users className="w-5 h-5 text-emerald-800" />
               <span>Saved Profiles</span>
             </button>
             <button
@@ -173,11 +174,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               }}
               className={`py-3 px-4 rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer ${
                 loginMode === "custom"
-                  ? "bg-white text-amber-900 shadow-sm border border-stone-200"
-                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/60"
+                  ? "bg-white text-emerald-950 shadow-sm border border-[#cbe0cf]"
+                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/50"
               }`}
             >
-              <UserPlus className="w-5 h-5 text-amber-700" />
+              <UserPlus className="w-5 h-5 text-emerald-800" />
               <span>Enter New Name</span>
             </button>
           </div>
@@ -187,11 +188,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             {loginMode === "preset" && (
               <div>
                 <div className="mb-5">
-                  <h2 className="text-xl font-black text-stone-900">
-                    Select Your Senior Profile
+                  <h2 className="font-display text-2xl font-bold text-stone-900">
+                    Welcome to Your Sanctuary
                   </h2>
-                  <p className="text-sm text-stone-600 mt-0.5">
-                    Tap a profile card below to sign in instantly with tailored health & voice settings.
+                  <p className="text-sm text-stone-600 mt-1 font-medium">
+                    Tap your profile card below to sign in with your personalized voice & care routine:
                   </p>
                 </div>
 
@@ -204,15 +205,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                         onClick={() => setSelectedPreset(p)}
                         className={`p-4 rounded-2xl border-2 transition cursor-pointer flex items-center justify-between ${
                           isSelected
-                            ? "border-amber-600 bg-amber-50/80 shadow-sm"
-                            : "border-stone-200 hover:border-amber-300 hover:bg-stone-50"
+                            ? "border-emerald-600 bg-emerald-50/90 shadow-sm"
+                            : "border-stone-200 hover:border-emerald-300 hover:bg-[#fcfffc]"
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
                           <div
-                            className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg ${
+                            className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg shadow-2xs ${
                               isSelected
-                                ? "bg-amber-600 text-white shadow-xs"
+                                ? "bg-emerald-800 text-white"
                                 : "bg-stone-200 text-stone-700"
                             }`}
                           >
@@ -223,7 +224,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                               <h3 className="font-black text-base sm:text-lg text-stone-900">
                                 {p.name}
                               </h3>
-                              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-200/70 text-amber-900">
+                              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-200/80 text-emerald-950">
                                 {p.preferredHonorific}
                               </span>
                             </div>
@@ -244,14 +245,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                               );
                             }}
                             title="Hear Mitraa's greeting"
-                            className="p-2 rounded-xl text-amber-800 hover:bg-amber-200/60 transition cursor-pointer"
+                            className="p-2 rounded-xl text-emerald-800 hover:bg-emerald-200/60 transition cursor-pointer"
                           >
                             <Volume2 className="w-5 h-5" />
                           </button>
                           <div
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                               isSelected
-                                ? "border-amber-600 bg-amber-600 text-white"
+                                ? "border-emerald-600 bg-emerald-600 text-white"
                                 : "border-stone-300"
                             }`}
                           >
@@ -267,9 +268,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   type="button"
                   id="login-preset-submit-btn"
                   onClick={handlePresetLogin}
-                  className="w-full py-4 px-6 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-lg shadow-md transition active:scale-98 flex items-center justify-center gap-3 cursor-pointer"
+                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 hover:from-emerald-900 hover:to-teal-900 text-white font-black text-lg shadow-md transition active:scale-98 flex items-center justify-center gap-3 cursor-pointer min-h-[54px]"
                 >
-                  <span>Continue as {selectedPreset.preferredHonorific}</span>
+                  <span>Enter Sanctuary as {selectedPreset.preferredHonorific}</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
@@ -279,10 +280,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             {loginMode === "custom" && (
               <form onSubmit={handleCustomLogin}>
                 <div className="mb-5">
-                  <h2 className="text-xl font-black text-stone-900">
-                    Sign In with Your Name
+                  <h2 className="font-display text-2xl font-bold text-stone-900">
+                    Create Your Senior Profile
                   </h2>
-                  <p className="text-sm text-stone-600 mt-0.5">
+                  <p className="text-sm text-stone-600 mt-1 font-medium">
                     Enter the senior's name below. Mitraa will personalize all greetings, reminders, and voice interactions for them.
                   </p>
                 </div>
@@ -312,7 +313,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                         value={customName}
                         onChange={(e) => handleNameChange(e.target.value)}
                         placeholder="e.g. Vandita Sharma, Robert Miller, Asha Devi"
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-stone-300 focus:border-amber-600 focus:outline-none text-stone-900 font-semibold text-base placeholder-stone-400"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-stone-300 focus:border-emerald-600 focus:outline-none text-stone-900 font-semibold text-base placeholder-stone-400"
                         autoFocus
                       />
                     </div>
@@ -335,7 +336,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                       value={customHonorific}
                       onChange={(e) => setCustomHonorific(e.target.value)}
                       placeholder="e.g. Ashaji, Dadaji, Grandpa Bob, Vandita"
-                      className="w-full px-4 py-3.5 rounded-2xl border-2 border-stone-300 focus:border-amber-600 focus:outline-none text-stone-900 font-semibold text-base"
+                      className="w-full px-4 py-3.5 rounded-2xl border-2 border-stone-300 focus:border-emerald-600 focus:outline-none text-stone-900 font-semibold text-base"
                     />
 
                     {/* Suggestions */}
@@ -356,7 +357,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                             onClick={() => handleSelectHonorificSuggestion(sug)}
                             className={`text-xs px-2.5 py-1 rounded-full border font-bold transition cursor-pointer ${
                               customHonorific === sug
-                                ? "bg-amber-600 text-white border-amber-600"
+                                ? "bg-emerald-700 text-white border-emerald-700"
                                 : "bg-stone-100 text-stone-700 border-stone-300 hover:bg-stone-200"
                             }`}
                           >
@@ -384,7 +385,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                           id="custom-language-select"
                           value={customLanguage}
                           onChange={(e) => setCustomLanguage(e.target.value as Language)}
-                          className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-stone-300 focus:border-amber-600 focus:outline-none text-stone-900 font-semibold text-sm bg-white"
+                          className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-stone-300 focus:border-emerald-600 focus:outline-none text-stone-900 font-semibold text-sm bg-white"
                         >
                           {languages.map((l) => (
                             <option key={l} value={l}>
@@ -409,7 +410,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                         max={110}
                         value={customAge}
                         onChange={(e) => setCustomAge(parseInt(e.target.value) || 70)}
-                        className="w-full px-4 py-3 rounded-2xl border-2 border-stone-300 focus:border-amber-600 focus:outline-none text-stone-900 font-semibold text-sm"
+                        className="w-full px-4 py-3 rounded-2xl border-2 border-stone-300 focus:border-emerald-600 focus:outline-none text-stone-900 font-semibold text-sm"
                       />
                     </div>
                   </div>
@@ -436,7 +437,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                         value={customPin}
                         onChange={(e) => setCustomPin(e.target.value)}
                         placeholder="e.g. 1234"
-                        className="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-stone-300 focus:border-amber-600 focus:outline-none text-stone-900 font-semibold text-sm tracking-widest"
+                        className="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-stone-300 focus:border-emerald-600 focus:outline-none text-stone-900 font-semibold text-sm tracking-widest"
                       />
                       <button
                         type="button"
@@ -449,8 +450,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   </div>
 
                   {/* Emergency Contact */}
-                  <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200">
-                    <p className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
+                    <p className="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <Heart className="w-3.5 h-3.5 text-rose-600" />
                       Emergency SOS Notification Contact
                     </p>
@@ -477,9 +478,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   <button
                     type="submit"
                     id="login-custom-submit-btn"
-                    className="w-full sm:flex-1 py-4 px-6 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-base sm:text-lg shadow-md transition active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:flex-1 py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 hover:from-emerald-900 hover:to-teal-900 text-white font-black text-base sm:text-lg shadow-md transition active:scale-98 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
                   >
-                    <span>Sign In to Mitraa</span>
+                    <span>Enter Mitraa Sanctuary</span>
                     <ArrowRight className="w-5 h-5" />
                   </button>
 
@@ -492,9 +493,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                         customLanguage
                       );
                     }}
-                    className="w-full sm:w-auto py-3.5 px-4 rounded-2xl border-2 border-stone-300 hover:bg-stone-100 text-stone-800 font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto py-3.5 px-4 rounded-2xl border-2 border-[#d2e0d5] hover:bg-stone-100 text-stone-800 font-bold text-sm flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
                   >
-                    <Volume2 className="w-4 h-4 text-amber-700" />
+                    <Volume2 className="w-4 h-4 text-emerald-700" />
                     <span>Test Voice</span>
                   </button>
                 </div>
@@ -503,10 +504,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           {/* Footer reassurance */}
-          <div className="px-6 py-4 bg-stone-50 border-t border-stone-200 text-center text-xs text-stone-500 font-medium flex items-center justify-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-600" />
+          <div className="px-6 py-4 bg-[#f4f8f5] border-t border-[#dce7de] text-center text-xs text-stone-600 font-medium flex items-center justify-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
             <span>
-              All information is kept securely on your device and used solely to assist you.
+              All information is kept securely on your device and used solely to assist you with care and dignity.
             </span>
           </div>
         </div>

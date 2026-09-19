@@ -85,6 +85,37 @@ class SpeechHelper {
 
 export const speechHelper = new SpeechHelper();
 
+// Gentle Meditative Chime Synthesizer for Senior Calmness & Breathing
+export const playCalmChime = () => {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    // Meditative harmonious chord: 370Hz (F#4), 440Hz (A4), 554Hz (C#5), 740Hz (F#5)
+    const freqs = [370, 440, 554.37, 740];
+    freqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.06 / (idx + 1), now + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + idx * 0.12);
+      osc.stop(now + 3.5);
+    });
+  } catch (e) {
+    console.warn("Could not play soothing chime", e);
+  }
+};
+
 // Speech Recognition helper
 export const createSpeechRecognizer = (
   onResult: (transcript: string) => void,

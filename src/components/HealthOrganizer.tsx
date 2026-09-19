@@ -157,7 +157,7 @@ export const HealthOrganizer: React.FC<HealthOrganizerProps> = ({
                 className={`p-5 rounded-3xl border-2 transition shadow-xs flex flex-col justify-between ${
                   med.takenToday
                     ? "bg-emerald-50/70 border-emerald-300"
-                    : "bg-white border-stone-200 hover:border-amber-400"
+                    : "bg-white border-stone-200 hover:border-emerald-400"
                 }`}
               >
                 <div>
@@ -169,7 +169,7 @@ export const HealthOrganizer: React.FC<HealthOrganizerProps> = ({
                       className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full border ${
                         med.takenToday
                           ? "bg-emerald-200 text-emerald-900 border-emerald-400"
-                          : "bg-amber-100 text-amber-900 border-amber-300"
+                          : "bg-emerald-50 text-emerald-900 border-emerald-300"
                       }`}
                     >
                       {med.takenToday ? "✓ Taken" : "Pending"}
@@ -264,14 +264,14 @@ export const HealthOrganizer: React.FC<HealthOrganizerProps> = ({
               </div>
 
               {/* Questions to Ask Doctor Checklist */}
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200">
-                <h4 className="font-extrabold text-sm uppercase tracking-wider text-amber-950 mb-2 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-amber-700" /> Questions Prepared for This Visit:
+              <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+                <h4 className="font-extrabold text-sm uppercase tracking-wider text-emerald-950 mb-2 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-emerald-700" /> Questions Prepared for This Visit:
                 </h4>
                 <ul className="space-y-1.5">
                   {apt.questionsToAsk.map((q, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm font-medium text-stone-800">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0 mt-2" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0 mt-2" />
                       <span>{q}</span>
                     </li>
                   ))}

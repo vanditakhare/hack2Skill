@@ -142,7 +142,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 value={senderInfo}
                 onChange={(e) => setSenderInfo(e.target.value)}
                 placeholder="e.g. +1 555-0199 or Unknown"
-                className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-800 focus:outline-none focus:border-rose-500 bg-stone-50/60"
+                className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-800 focus:outline-none focus:border-emerald-600 bg-stone-50/60"
               />
             </div>
             <div className="w-full sm:w-2/3">
@@ -157,7 +157,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                   setSelectedSampleId("");
                 }}
                 placeholder="Paste the suspicious text here..."
-                className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-800 focus:outline-none focus:border-rose-500 bg-stone-50/60"
+                className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-800 focus:outline-none focus:border-emerald-600 bg-stone-50/60"
               />
             </div>
           </div>
@@ -182,7 +182,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
             result.verdict === "DANGEROUS_SCAM"
               ? "bg-rose-50/90 border-rose-500 text-stone-900"
               : result.verdict === "CAUTION"
-              ? "bg-amber-50 border-amber-400 text-stone-900"
+              ? "bg-emerald-50 border-emerald-400 text-stone-900"
               : "bg-emerald-50 border-emerald-400 text-stone-900"
           }`}
         >
@@ -194,7 +194,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                   <XCircle className="w-9 h-9" />
                 </div>
               ) : result.verdict === "CAUTION" ? (
-                <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-2xl shadow-md shrink-0">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-2xl shadow-md shrink-0">
                   <AlertTriangle className="w-9 h-9" />
                 </div>
               ) : (
@@ -209,7 +209,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                     result.verdict === "DANGEROUS_SCAM"
                       ? "bg-rose-200 text-rose-900 border-rose-400"
                       : result.verdict === "CAUTION"
-                      ? "bg-amber-200 text-amber-900 border-amber-400"
+                      ? "bg-emerald-200 text-emerald-900 border-emerald-400"
                       : "bg-emerald-200 text-emerald-900 border-emerald-400"
                   }`}
                 >
@@ -297,7 +297,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
         {/* Interactive "Before You Pay" Checklist */}
         <div className="bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
@@ -318,7 +318,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 onChange={(e) =>
                   setChecklist({ ...checklist, knowPerson: e.target.checked })
                 }
-                className="w-5 h-5 mt-0.5 accent-amber-600 rounded"
+                className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
                 1. Do you personally know the person or official receiving the money?
@@ -332,7 +332,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 onChange={(e) =>
                   setChecklist({ ...checklist, verifiedVoice: e.target.checked })
                 }
-                className="w-5 h-5 mt-0.5 accent-amber-600 rounded"
+                className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
                 2. If it's a family member asking for money, did you call them on their regular phone to verify their voice?
@@ -346,7 +346,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 onChange={(e) =>
                   setChecklist({ ...checklist, noRush: e.target.checked })
                 }
-                className="w-5 h-5 mt-0.5 accent-amber-600 rounded"
+                className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
                 3. Are you feeling calm and NOT being rushed with threats of "pay within 10 minutes"?
@@ -360,7 +360,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
                 onChange={(e) =>
                   setChecklist({ ...checklist, noOtpAsked: e.target.checked })
                 }
-                className="w-5 h-5 mt-0.5 accent-amber-600 rounded"
+                className="w-5 h-5 mt-0.5 accent-emerald-700 rounded"
               />
               <span className="text-sm font-semibold text-stone-800">
                 4. Confirmed that NO ONE has asked for your bank OTP, password, or PIN?
@@ -372,7 +372,7 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
             className={`p-3.5 rounded-2xl text-center font-bold text-sm transition ${
               allChecklistPassed
                 ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
-                : "bg-amber-50 text-amber-900 border border-amber-300"
+                : "bg-emerald-50/70 text-emerald-950 border border-emerald-200"
             }`}
           >
             {allChecklistPassed ? (
@@ -386,17 +386,17 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
         </div>
 
         {/* The Golden OTP Rule Card */}
-        <div className="bg-gradient-to-br from-amber-600 to-stone-900 text-white p-6 sm:p-7 rounded-3xl shadow-md flex flex-col justify-between">
+        <div className="bg-gradient-to-br from-emerald-800 via-emerald-700 to-stone-900 text-white p-6 sm:p-7 rounded-3xl shadow-md flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 text-amber-300 text-xs font-black uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-2 text-emerald-200 text-xs font-black uppercase tracking-wider mb-2">
               <Lock className="w-4 h-4" /> Lifetime Golden Rule
             </div>
             <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
               The Golden Rule of Your Bank OTP & PIN
             </h3>
-            <p className="text-amber-100 text-base sm:text-lg mt-3 leading-relaxed font-medium">
+            <p className="text-emerald-100 text-base sm:text-lg mt-3 leading-relaxed font-medium">
               No real bank manager, police officer, or government official will{" "}
-              <span className="font-black text-amber-300 underline">EVER</span> call or message you asking for:
+              <span className="font-black text-emerald-300 underline">EVER</span> call or message you asking for:
             </p>
 
             <ul className="mt-4 space-y-2 text-sm sm:text-base font-bold text-white">
@@ -415,8 +415,8 @@ export const ScamProtection: React.FC<ScamProtectionProps> = ({ profile }) => {
             </ul>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-amber-500/30 text-xs text-amber-200 font-medium">
-            If anyone asks for these numbers over phone or WhatsApp, hang up immediately and tell your family or Sathi.
+          <div className="mt-6 pt-4 border-t border-emerald-600/30 text-xs text-emerald-200 font-medium">
+            If anyone asks for these numbers over phone or WhatsApp, hang up immediately and tell your family or Mitraa.
           </div>
         </div>
       </div>

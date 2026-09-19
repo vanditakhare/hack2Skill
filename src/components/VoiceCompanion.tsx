@@ -196,20 +196,20 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
   return (
     <div
       id="voice-companion-module"
-      className="bg-white rounded-3xl border border-stone-200 shadow-sm p-4 sm:p-6 lg:p-8 flex flex-col h-[750px] max-h-[85vh]"
+      className="sanctuary-card rounded-3xl border border-[#dce7de] shadow-sm p-4 sm:p-6 lg:p-8 flex flex-col h-[750px] max-h-[85vh]"
     >
       {/* Module Title Strip */}
-      <div className="flex flex-wrap items-center justify-between pb-4 border-b border-stone-100 gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-            <Bot className="w-7 h-7" />
+      <div className="flex flex-wrap items-center justify-between pb-4 border-b border-stone-200 gap-3">
+        <div className="flex items-center gap-3.5">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 text-white flex items-center justify-center font-bold text-2xl shadow-xs">
+            मि
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold text-emerald-950 tracking-tight">
               Mitraa Voice Companion
             </h2>
-            <p className="text-sm font-medium text-stone-500">
-              Gentle, patient, natural conversation in {profile.language}
+            <p className="text-xs sm:text-sm font-medium text-stone-600">
+              Gentle, patient, natural conversation in {profile.language} • {profile.preferredHonorific}
             </p>
           </div>
         </div>
@@ -219,7 +219,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
           {isSpeaking && (
             <button
               onClick={stopSpeaking}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-xs font-bold animate-pulse cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-bold animate-pulse cursor-pointer"
             >
               <Volume2 className="w-4 h-4" /> Speaking (Tap to Stop)
             </button>
@@ -240,7 +240,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
               className={`flex items-start gap-3 ${isAssistant ? "justify-start" : "justify-end"}`}
             >
               {isAssistant && (
-                <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm">
+                <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm">
                   मि
                 </div>
               )}
@@ -248,8 +248,8 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
               <div
                 className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 sm:p-5 shadow-2xs ${
                   isAssistant
-                    ? "bg-amber-50/70 border border-amber-200 text-stone-900"
-                    : "bg-amber-700 text-white font-medium"
+                    ? "bg-emerald-50/70 border border-emerald-200 text-stone-900"
+                    : "bg-emerald-800 text-white font-medium"
                 }`}
               >
                 <div
@@ -266,14 +266,14 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
 
                 {/* Assistant Controls (Repeat That & Time) */}
                 {isAssistant && (
-                  <div className="mt-3 pt-2 border-t border-amber-200/60 flex items-center justify-between text-xs text-stone-500">
+                  <div className="mt-3 pt-2 border-t border-emerald-200/60 flex items-center justify-between text-xs text-stone-500">
                     <span>{msg.timestamp}</span>
                     <button
                       onClick={() => speakMessage(msg.text)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-amber-900 font-bold hover:bg-amber-100 transition active:scale-95 cursor-pointer shadow-2xs text-xs sm:text-sm min-h-[38px]"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-emerald-900 font-bold hover:bg-emerald-100 transition active:scale-95 cursor-pointer shadow-2xs text-xs sm:text-sm min-h-[38px]"
                       title="Listen to this message again"
                     >
-                      <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
+                      <RotateCcw className="w-3.5 h-3.5 text-emerald-700" />
                       <span>Repeat that (बोलें)</span>
                     </button>
                   </div>
@@ -291,7 +291,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
 
         {isLoading && (
           <div className="flex items-center gap-3 text-stone-500 py-2">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center animate-spin">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center animate-spin">
               <Sparkles className="w-5 h-5" />
             </div>
             <p className="text-base font-medium animate-pulse text-stone-700">
@@ -313,7 +313,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
             <button
               key={idx}
               onClick={() => handleSendMessage(p.query)}
-              className="px-3 py-2 rounded-xl bg-stone-50 hover:bg-amber-100 text-stone-800 border border-stone-200 font-semibold text-xs sm:text-sm shrink-0 transition active:scale-95 cursor-pointer shadow-2xs min-h-[40px]"
+              className="px-3 py-2 rounded-xl bg-stone-50 hover:bg-emerald-100 text-stone-800 border border-stone-200 font-semibold text-xs sm:text-sm shrink-0 transition active:scale-95 cursor-pointer shadow-2xs min-h-[40px]"
             >
               {p.label}
             </button>
@@ -338,7 +338,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
             className={`flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl font-extrabold transition shadow-md active:scale-95 cursor-pointer shrink-0 ${
               isListening
                 ? "bg-rose-600 text-white ring-4 ring-rose-300 animate-pulse"
-                : "bg-amber-600 hover:bg-amber-700 text-white"
+                : "bg-emerald-700 hover:bg-emerald-800 text-white"
             }`}
             title={isListening ? "Listening... Tap to Stop" : "Tap to Speak your question"}
           >
@@ -356,7 +356,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
               className={`w-full rounded-2xl border-2 px-4 py-3.5 sm:py-4 focus:outline-none transition ${
                 isListening
                   ? "border-rose-400 bg-rose-50/50 text-stone-900"
-                  : "border-stone-300 focus:border-amber-600 bg-stone-50/50 text-stone-900"
+                  : "border-stone-300 focus:border-emerald-600 bg-stone-50/50 text-stone-900"
               } text-base sm:text-lg font-medium`}
             />
           </div>
@@ -366,7 +366,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
             type="submit"
             disabled={!inputQuery.trim() || isLoading}
             id="voice-companion-send-btn"
-            className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-800 hover:bg-amber-900 disabled:opacity-40 text-white font-bold transition shadow-md active:scale-95 cursor-pointer shrink-0"
+            className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-emerald-800 hover:bg-emerald-900 disabled:opacity-40 text-white font-bold transition shadow-md active:scale-95 cursor-pointer shrink-0"
             title="Send Message"
           >
             <Send className="w-6 h-6" />

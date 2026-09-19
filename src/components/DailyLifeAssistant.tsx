@@ -111,9 +111,9 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
         };
       case "bill":
         return {
-          icon: <FileText className="w-4 h-4 text-amber-700" />,
+          icon: <FileText className="w-4 h-4 text-emerald-700" />,
           label: "Bills & Finance",
-          bg: "bg-amber-100 text-amber-900 border-amber-300",
+          bg: "bg-emerald-100 text-emerald-900 border-emerald-300",
         };
       case "leisure":
       default:
@@ -128,19 +128,19 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
   return (
     <div id="daily-life-module" className="space-y-6">
       {/* "What Should I Do Today?" Proactive Briefing Banner */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-800 text-white shadow-md relative overflow-hidden">
+      <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-900 text-white shadow-md relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/40 text-xs font-bold uppercase tracking-wider">
+              <span className="px-3 py-1 rounded-full bg-emerald-600/40 text-emerald-200 border border-emerald-400/40 text-xs font-bold uppercase tracking-wider">
                 Morning Briefing
               </span>
-              <span className="text-amber-200 text-sm font-medium">Thursday • Pleasant 24°C</span>
+              <span className="text-emerald-200 text-sm font-medium">Thursday • Pleasant 24°C</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-              "What Should I Do Today, Sathi?"
+            <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              "What Should I Do Today, Mitraa?"
             </h2>
-            <p className="text-amber-100 text-base sm:text-lg max-w-2xl leading-relaxed">
+            <p className="text-emerald-100 text-base sm:text-lg max-w-2xl leading-relaxed">
               You have completed <span className="font-extrabold text-white">{completedCount} of {totalCount}</span> daily activities.
               Stay hydrated, take your evening medicines after dinner, and remember to enjoy your afternoon rest.
             </p>
@@ -149,17 +149,17 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={handleReadSchedule}
-              className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white hover:bg-amber-50 text-amber-900 font-extrabold text-base shadow-md transition active:scale-95 cursor-pointer min-h-[48px]"
+              className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-950 font-extrabold text-base shadow-md transition active:scale-95 cursor-pointer min-h-[48px]"
             >
-              <Volume2 className="w-5 h-5 text-amber-700" />
+              <Volume2 className="w-5 h-5 text-emerald-700" />
               <span>Listen to My Day</span>
             </button>
 
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-amber-500/30 hover:bg-amber-500/50 text-white font-extrabold text-base border border-amber-300/40 shadow-sm transition active:scale-95 cursor-pointer min-h-[48px]"
+              className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-emerald-600/40 hover:bg-emerald-600/60 text-white font-extrabold text-base border border-emerald-400/40 shadow-sm transition active:scale-95 cursor-pointer min-h-[48px]"
             >
-              <Plus className="w-5 h-5 text-amber-300" />
+              <Plus className="w-5 h-5 text-emerald-200" />
               <span>Add Reminder</span>
             </button>
           </div>
@@ -174,14 +174,14 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
         )}
 
         {/* Visual Progress Bar */}
-        <div className="mt-6 pt-4 border-t border-amber-500/30 flex items-center gap-4">
+        <div className="mt-6 pt-4 border-t border-emerald-600/30 flex items-center gap-4">
           <div className="flex-1 bg-black/30 rounded-full h-3 overflow-hidden p-0.5">
             <div
               className="bg-emerald-400 h-full rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <span className="text-xs font-bold text-amber-100">{progressPercent}% Completed</span>
+          <span className="text-xs font-bold text-emerald-100">{progressPercent}% Completed</span>
         </div>
       </div>
 
@@ -191,7 +191,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
           onClick={() => setFilter("all")}
           className={`px-4 py-2.5 rounded-2xl text-sm font-bold transition active:scale-95 cursor-pointer min-h-[44px] ${
             filter === "all"
-              ? "bg-amber-700 text-white shadow-xs"
+              ? "bg-emerald-800 text-white shadow-xs"
               : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-100"
           }`}
         >
@@ -231,7 +231,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
           onClick={() => setFilter("bill")}
           className={`px-4 py-2.5 rounded-2xl text-sm font-bold transition active:scale-95 cursor-pointer min-h-[44px] ${
             filter === "bill"
-              ? "bg-amber-700 text-white shadow-xs"
+              ? "bg-emerald-700 text-white shadow-xs"
               : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-100"
           }`}
         >
@@ -249,7 +249,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
               className={`p-4 sm:p-5 rounded-2xl border transition shadow-2xs flex items-start justify-between gap-4 ${
                 item.completed
                   ? "bg-stone-50/80 border-stone-200 opacity-75"
-                  : "bg-white border-stone-200 hover:border-amber-400"
+                  : "bg-white border-stone-200 hover:border-emerald-400"
               }`}
             >
               {/* Checkbox & Details */}
@@ -262,14 +262,14 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                   {item.completed ? (
                     <CheckCircle2 className="w-8 h-8 text-emerald-600 shrink-0" />
                   ) : (
-                    <Circle className="w-8 h-8 text-stone-300 hover:text-amber-600 shrink-0" />
+                    <Circle className="w-8 h-8 text-stone-300 hover:text-emerald-600 shrink-0" />
                   )}
                 </button>
 
                 <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="flex items-center gap-1 text-xs font-bold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
-                      <Clock className="w-3.5 h-3.5 text-amber-700" />
+                      <Clock className="w-3.5 h-3.5 text-emerald-700" />
                       {item.time}
                     </span>
                     <span
@@ -305,7 +305,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                 className="p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-600 cursor-pointer shrink-0"
                 title="Listen to this task"
               >
-                <Volume2 className="w-4 h-4 text-amber-800" />
+                <Volume2 className="w-4 h-4 text-emerald-800" />
               </button>
             </div>
           );
@@ -337,7 +337,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Drink warm turmeric milk, call Priya"
-                  className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-amber-600"
+                  className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-emerald-600"
                 />
               </div>
 
@@ -351,7 +351,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                     value={newTime}
                     onChange={(e) => setNewTime(e.target.value)}
                     placeholder="e.g. 05:00 PM"
-                    className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-amber-600"
+                    className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-emerald-600"
                   />
                 </div>
 
@@ -360,7 +360,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as any)}
-                    className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-amber-600 bg-white"
+                    className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-emerald-600 bg-white"
                   >
                     <option value="medicine">💊 Medicine</option>
                     <option value="health">❤️ Health & Walk</option>
@@ -380,7 +380,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
                   placeholder="e.g. Take with a glass of water"
-                  className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-amber-600"
+                  className="w-full p-3 border rounded-xl font-medium text-stone-900 focus:outline-none focus:border-emerald-600"
                 />
               </div>
 
@@ -394,7 +394,7 @@ export const DailyLifeAssistant: React.FC<DailyLifeAssistantProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold cursor-pointer shadow-sm"
+                  className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold cursor-pointer shadow-sm"
                 >
                   Save Reminder
                 </button>

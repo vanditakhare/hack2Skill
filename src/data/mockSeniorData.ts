@@ -137,7 +137,7 @@ export const initialSchedule: ScheduleItem[] = [
     title: "Electricity Bill Due Date Reminder",
     category: "bill",
     completed: false,
-    notes: "Amount $42.50 due tomorrow - Sathi will guide payment",
+    notes: "Amount $42.50 due tomorrow - Mitraa will guide payment",
   },
   {
     id: "s6",
@@ -436,7 +436,7 @@ export const prebuiltTaskGuides: Record<string, DigitalTaskGuide> = {
         stepNumber: 5,
         title: "Save or Screenshot the Success Receipt",
         instruction: "When the screen says 'Payment Successful', take a screenshot or write down the 12-digit Transaction ID on your paper bill.",
-        tip: "Sathi automatically marks this bill as paid for your peace of mind!",
+        tip: "Mitraa automatically marks this bill as paid for your peace of mind!",
         safetyCheck: "You are all done! Close the browser tab comfortably.",
       },
     ],
@@ -460,7 +460,7 @@ export const prebuiltTaskGuides: Record<string, DigitalTaskGuide> = {
         stepNumber: 2,
         title: "Find Your Family Member's Name",
         instruction: "Tap on the search magnifying glass icon at the top and type 'Priya' or scroll down your chats until you see their photo.",
-        tip: "You can also ask Sathi to dial directly using the trusted contacts list.",
+        tip: "You can also ask Mitraa to dial directly using the trusted contacts list.",
         safetyCheck: "Double-check the contact name before ringing.",
       },
       {

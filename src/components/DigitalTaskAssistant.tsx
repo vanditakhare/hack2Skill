@@ -109,7 +109,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
       {/* Top Banner */}
       <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
             <MousePointerClick className="w-6 h-6" />
           </div>
           <div>
@@ -132,12 +132,12 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               onClick={() => handleSelectPreset("pay-bill")}
               className={`p-4 rounded-2xl border text-left transition active:scale-95 cursor-pointer min-h-[48px] ${
                 activeTaskId === "pay-bill" && !customGuide
-                  ? "bg-amber-100 border-amber-500 text-amber-950 font-bold shadow-xs"
+                  ? "bg-emerald-100 border-emerald-500 text-emerald-950 font-bold shadow-xs"
                   : "bg-stone-50 border-stone-200 hover:bg-stone-100 text-stone-800 font-medium"
               }`}
             >
               <div className="flex items-center gap-2 mb-1">
-                <CreditCard className="w-5 h-5 text-amber-700" />
+                <CreditCard className="w-5 h-5 text-emerald-700" />
                 <span className="font-bold text-base">Pay Bill Online</span>
               </div>
               <span className="text-xs text-stone-600 block">Electricity, water, or phone bill safely</span>
@@ -147,7 +147,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               onClick={() => handleSelectPreset("whatsapp-call")}
               className={`p-4 rounded-2xl border text-left transition active:scale-95 cursor-pointer min-h-[48px] ${
                 activeTaskId === "whatsapp-call" && !customGuide
-                  ? "bg-amber-100 border-amber-500 text-amber-950 font-bold shadow-xs"
+                  ? "bg-emerald-100 border-emerald-500 text-emerald-950 font-bold shadow-xs"
                   : "bg-stone-50 border-stone-200 hover:bg-stone-100 text-stone-800 font-medium"
               }`}
             >
@@ -162,7 +162,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               onClick={() => handleSelectPreset("life-certificate")}
               className={`p-4 rounded-2xl border text-left transition active:scale-95 cursor-pointer min-h-[48px] ${
                 activeTaskId === "life-certificate" && !customGuide
-                  ? "bg-amber-100 border-amber-500 text-amber-950 font-bold shadow-xs"
+                  ? "bg-emerald-100 border-emerald-500 text-emerald-950 font-bold shadow-xs"
                   : "bg-stone-50 border-stone-200 hover:bg-stone-100 text-stone-800 font-medium"
               }`}
             >
@@ -184,15 +184,15 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               value={customQuery}
               onChange={(e) => setCustomQuery(e.target.value)}
               placeholder="Need help with something else? (e.g. How to order medicine online, book cab)"
-              className="w-full pl-11 pr-4 py-3 rounded-2xl border border-stone-300 focus:border-amber-600 focus:outline-none text-sm sm:text-base font-medium text-stone-800 bg-stone-50/70"
+              className="w-full pl-11 pr-4 py-3 rounded-2xl border border-stone-300 focus:border-emerald-600 focus:outline-none text-sm sm:text-base font-medium text-stone-800 bg-stone-50/70"
             />
           </div>
           <button
             type="submit"
             disabled={!customQuery.trim() || isLoadingCustom}
-            className="px-5 py-3 rounded-2xl bg-amber-800 hover:bg-amber-900 disabled:opacity-40 text-white font-bold text-sm sm:text-base shrink-0 transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+            className="px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 disabled:opacity-40 text-white font-bold text-sm sm:text-base shrink-0 transition active:scale-95 cursor-pointer flex items-center gap-1.5"
           >
-            <Sparkles className="w-4 h-4 text-amber-300" />
+            <Sparkles className="w-4 h-4 text-emerald-200" />
             <span>{isLoadingCustom ? "Creating Guide..." : "Guide Me"}</span>
           </button>
         </form>
@@ -204,7 +204,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
         <div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <span className="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full uppercase tracking-wider">
+              <span className="text-xs font-bold text-emerald-900 bg-emerald-100 px-3 py-1 rounded-full uppercase tracking-wider">
                 {currentGuide.estimatedTime} Guide
               </span>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-1">
@@ -216,7 +216,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               onClick={handleSpeakCurrentStep}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-sm cursor-pointer shadow-2xs min-h-[44px]"
             >
-              <Volume2 className="w-4 h-4 text-amber-800" />
+              <Volume2 className="w-4 h-4 text-emerald-800" />
               <span>Read Step Out Loud</span>
             </button>
           </div>
@@ -232,7 +232,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
                 }}
                 className={`h-3 flex-1 rounded-full transition-all cursor-pointer ${
                   idx === currentStepIndex
-                    ? "bg-amber-600 ring-2 ring-amber-300"
+                    ? "bg-emerald-600 ring-2 ring-emerald-300"
                     : idx < currentStepIndex
                     ? "bg-emerald-500"
                     : "bg-stone-200"
@@ -253,9 +253,9 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
         {!isTaskCompleted ? (
           <div className="space-y-4 animate-fadeIn">
             {/* Step Number & Title */}
-            <div className="p-6 rounded-3xl bg-amber-50/50 border-2 border-amber-200">
+            <div className="p-6 rounded-3xl bg-emerald-50/50 border-2 border-emerald-200">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-600 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-sm">
                   {currentStep.stepNumber}
                 </div>
                 <div>
@@ -269,10 +269,10 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               </div>
 
               {/* Helpful Tip */}
-              <div className="mt-4 pt-4 border-t border-amber-200/60 flex items-start gap-3 text-stone-700">
-                <Lightbulb className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+              <div className="mt-4 pt-4 border-t border-emerald-200/60 flex items-start gap-3 text-stone-700">
+                <Lightbulb className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-sm text-amber-950 block">Comfort Tip:</span>
+                  <span className="font-bold text-sm text-emerald-950 block">Comfort Tip:</span>
                   <p className="text-sm font-medium">{currentStep.tip}</p>
                 </div>
               </div>
@@ -298,7 +298,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
                 <ul className="space-y-1.5 text-sm font-medium text-stone-700">
                   {currentGuide.prerequisites.map((p, i) => (
                     <li key={i} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                       <span>{p}</span>
                     </li>
                   ))}
@@ -316,7 +316,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               Task Completed Successfully!
             </h4>
             <p className="text-stone-700 text-base max-w-md mx-auto">
-              You navigated this digital task with confidence. You can always come back and practice anytime with Sathi.
+              You navigated this digital task with confidence. You can always come back and practice anytime with Mitraa.
             </p>
             <button
               onClick={() => {
@@ -345,7 +345,7 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
           {!isTaskCompleted && (
             <button
               onClick={handleNextStep}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-extrabold text-base shadow-md cursor-pointer active:scale-95 min-h-[48px]"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-base shadow-md cursor-pointer active:scale-95 min-h-[48px]"
             >
               <span>{currentStepIndex === currentGuide.steps.length - 1 ? "Finish Task" : "Next Step"}</span>
               <ChevronRight className="w-5 h-5" />

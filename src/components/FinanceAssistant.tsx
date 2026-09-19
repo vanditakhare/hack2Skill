@@ -62,7 +62,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
       {/* Top Banner */}
       <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
             <DollarSign className="w-7 h-7" />
           </div>
           <div>
@@ -79,7 +79,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
       {/* Upcoming Bills Widget */}
       <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs">
         <h3 className="text-xl font-extrabold text-stone-900 mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-amber-700" />
+          <Calendar className="w-5 h-5 text-emerald-700" />
           Monthly Bills & Due-Dates
         </h3>
 
@@ -91,7 +91,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
                 b.status === "paid"
                   ? "bg-stone-50 border-stone-200 opacity-80"
                   : b.status === "due_soon"
-                  ? "bg-amber-50/70 border-amber-400"
+                  ? "bg-emerald-50/70 border-emerald-400"
                   : "bg-white border-stone-200"
               }`}
             >
@@ -105,7 +105,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
                       b.status === "paid"
                         ? "bg-emerald-100 text-emerald-900 border-emerald-300"
                         : b.status === "due_soon"
-                        ? "bg-amber-200 text-amber-900 border-amber-400 animate-pulse"
+                        ? "bg-emerald-200 text-emerald-950 border-emerald-400 animate-pulse"
                         : "bg-stone-100 text-stone-800 border-stone-300"
                     }`}
                   >
@@ -114,7 +114,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
                 </div>
 
                 <h4 className="text-lg font-black text-stone-900">{b.title}</h4>
-                <div className="text-2xl font-black text-amber-900 mt-2">{b.amount}</div>
+                <div className="text-2xl font-black text-emerald-950 mt-2">{b.amount}</div>
                 <p className="text-xs text-stone-600 font-semibold mt-1">
                   Due: <span className="font-bold text-stone-900">{b.dueDate}</span>
                 </p>
@@ -129,7 +129,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer min-h-[38px] ${
                     b.status === "paid"
                       ? "bg-stone-200 text-stone-700 hover:bg-stone-300"
-                      : "bg-amber-700 text-white hover:bg-amber-800"
+                      : "bg-emerald-700 text-white hover:bg-emerald-800"
                   }`}
                 >
                   {b.status === "paid" ? "Mark Unpaid" : "Mark as Paid"}
@@ -145,7 +145,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
                   className="p-2 rounded-xl hover:bg-stone-100 text-stone-600 cursor-pointer"
                   title="Listen"
                 >
-                  <Volume2 className="w-4 h-4 text-amber-800" />
+                  <Volume2 className="w-4 h-4 text-emerald-800" />
                 </button>
               </div>
             </div>
@@ -156,7 +156,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
       {/* Bank Statement Explainer */}
       <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs">
         <h3 className="text-xl font-extrabold text-stone-900 mb-1 flex items-center gap-2">
-          <Building className="w-5 h-5 text-amber-700" />
+          <Building className="w-5 h-5 text-emerald-700" />
           Explain Bank Statement Charge
         </h3>
         <p className="text-xs text-stone-500 font-medium mb-4">
@@ -169,21 +169,21 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
             value={statementSnippet}
             onChange={(e) => setStatementSnippet(e.target.value)}
             placeholder="e.g. POS TXN #4902 METRO POWER - $42.50"
-            className="flex-1 p-3.5 rounded-2xl border border-stone-300 font-medium text-stone-900 focus:outline-none focus:border-amber-600 bg-stone-50/70"
+            className="flex-1 p-3.5 rounded-2xl border border-stone-300 font-medium text-stone-900 focus:outline-none focus:border-emerald-600 bg-stone-50/70"
           />
           <button
             onClick={handleExplainStatement}
-            className="px-6 py-3.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white font-extrabold text-sm sm:text-base shrink-0 transition active:scale-95 cursor-pointer shadow-xs min-h-[48px]"
+            className="px-6 py-3.5 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-extrabold text-sm sm:text-base shrink-0 transition active:scale-95 cursor-pointer shadow-xs min-h-[48px]"
           >
             Explain in Simple Words
           </button>
         </div>
 
         {statementExplanation && (
-          <div className="mt-4 p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-start gap-3">
+          <div className="mt-4 p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-start gap-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
             <div>
-              <span className="font-extrabold text-sm text-amber-950 block">Sathi's Explanation:</span>
+              <span className="font-extrabold text-sm text-emerald-950 block">Mitraa's Explanation:</span>
               <p className="text-stone-800 text-base font-medium mt-0.5">{statementExplanation}</p>
             </div>
           </div>
@@ -193,7 +193,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
       {/* Senior Banking Jargon Buster */}
       <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs">
         <div className="flex items-center gap-2 mb-2">
-          <HelpCircle className="w-5 h-5 text-amber-700" />
+          <HelpCircle className="w-5 h-5 text-emerald-700" />
           <h3 className="text-xl font-extrabold text-stone-900">
             Senior Banking Jargon Buster
           </h3>
@@ -209,7 +209,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
               onClick={() => setSelectedJargon(j)}
               className={`px-4 py-2 rounded-xl text-sm font-bold transition active:scale-95 cursor-pointer min-h-[40px] ${
                 selectedJargon.term === j.term
-                  ? "bg-amber-700 text-white shadow-xs"
+                  ? "bg-emerald-700 text-white shadow-xs"
                   : "bg-stone-100 hover:bg-stone-200 text-stone-800"
               }`}
             >
@@ -228,9 +228,9 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
                   { rate: profile.voiceSpeed, language: profile.language }
                 )
               }
-              className="flex items-center gap-1 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg cursor-pointer"
+              className="flex items-center gap-1 text-xs font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg cursor-pointer"
             >
-              <Volume2 className="w-3.5 h-3.5 text-amber-700" />
+              <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
               <span>Read Aloud</span>
             </button>
           </div>
@@ -239,7 +239,7 @@ export const FinanceAssistant: React.FC<FinanceAssistantProps> = ({
             {selectedJargon.meaning}
           </p>
 
-          <div className="mt-3 p-3 rounded-xl bg-amber-100/70 border border-amber-300 text-xs sm:text-sm font-bold text-amber-950 flex items-start gap-2">
+          <div className="mt-3 p-3 rounded-xl bg-emerald-100/70 border border-emerald-300 text-xs sm:text-sm font-bold text-emerald-950 flex items-start gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
             <span>Golden Rule: {selectedJargon.goldenRule}</span>
           </div>

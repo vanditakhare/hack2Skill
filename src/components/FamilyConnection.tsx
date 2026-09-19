@@ -191,7 +191,7 @@ export const FamilyConnection: React.FC<FamilyConnectionProps> = ({
           {/* Quick Request-Help Presets */}
           <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs">
             <div className="flex items-center gap-2 mb-2">
-              <HeartHandshake className="w-5 h-5 text-amber-700" />
+              <HeartHandshake className="w-5 h-5 text-emerald-700" />
               <h3 className="text-xl font-extrabold text-stone-900">
                 Ask Family for Gentle Help
               </h3>
@@ -205,7 +205,7 @@ export const FamilyConnection: React.FC<FamilyConnectionProps> = ({
                 onClick={() =>
                   handleSendHelpPreset("Hi beta, could you please help me refill my blood pressure medicine when you visit?")
                 }
-                className="p-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 text-left font-bold text-sm transition active:scale-95 cursor-pointer"
+                className="p-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 text-left font-bold text-sm transition active:scale-95 cursor-pointer"
               >
                 💊 "Help refill my medicine prescription"
               </button>
