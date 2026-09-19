@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    color: #1c1917;
+    background-color: #faf8f5;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Senior Accessibility Typography Sizes */
+.text-size-normal {
+  font-size: 16px;
+}
+
+.text-size-large {
+  font-size: 19px;
+}
+
+.text-size-extra-large {
+  font-size: 22px;
+}
+
+/* High Contrast Mode for low vision */
+.high-contrast {
+  --tw-bg-opacity: 1;
+  background-color: #0c0a09 !important;
+  color: #fef08a !important;
+}
+
+.high-contrast .bg-white {
+  background-color: #1c1917 !important;
+  color: #fef08a !important;
+  border-color: #ca8a04 !important;
+}
+
+.high-contrast .bg-stone-50,
+.high-contrast .bg-amber-50,
+.high-contrast .bg-emerald-50,
+.high-contrast .bg-blue-50,
+.high-contrast .bg-rose-50 {
+  background-color: #292524 !important;
+  color: #fef9c3 !important;
+  border-color: #eab308 !important;
+}
+
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3,
+.high-contrast h4,
+.high-contrast h5,
+.high-contrast p,
+.high-contrast span {
+  color: #fef08a !important;
+}
+
+.high-contrast button {
+  border-color: #fef08a !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

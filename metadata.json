@@ -1,0 +1,10 @@
+{
+  "name": "Mitraa - Senior Daily AI Companion",
+  "description": "Intelligent, accessible, and trustworthy GenAI-powered daily companion for senior citizens and grandparents.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
