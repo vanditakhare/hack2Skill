@@ -22,7 +22,7 @@ import {
   ShieldCheck,
   ChevronRight,
 } from "lucide-react";
-import { SeniorProfile, ModuleTab, ScheduleItem, Medicine, BillItem, VitalLog } from "./types";
+import { SeniorProfile, ModuleTab, ScheduleItem, Medicine, BillItem, VitalLog, DoctorAppointment } from "./types";
 import {
   initialSeniorProfile,
   initialSchedule,
@@ -30,6 +30,7 @@ import {
   initialBills,
   initialTrustedContacts,
   initialVitals,
+  initialAppointments,
 } from "./data/mockSeniorData";
 import { Header } from "./components/Header";
 import { VoiceCompanion } from "./components/VoiceCompanion";
@@ -44,6 +45,9 @@ import { CompanionPersonalization } from "./components/CompanionPersonalization"
 import { EmergencyModal } from "./components/EmergencyModal";
 import { LoginPage } from "./components/LoginPage";
 import { CalmBreathSection } from "./components/CalmBreathSection";
+import { ProactiveDailyBriefing } from "./components/ProactiveDailyBriefing";
+import { EverydayPillarsHub } from "./components/EverydayPillarsHub";
+import { SeniorTrustBanner } from "./components/SeniorTrustBanner";
 import { speechHelper, playCalmChime } from "./utils/speech";
 import { getTranslation } from "./utils/translations";
 
@@ -77,11 +81,22 @@ export default function App() {
   const [medicines, setMedicines] = useState<Medicine[]>(initialMedicines);
   const [bills, setBills] = useState<BillItem[]>(initialBills);
   const [vitals, setVitals] = useState<VitalLog[]>(initialVitals);
+  const [appointments, setAppointments] = useState<DoctorAppointment[]>(initialAppointments);
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [breathingActive, setBreathingActive] = useState<boolean>(false);
 
   const handleStartBreathing = () => {
     setBreathingActive((prev) => !prev);
+  };
+
+  const handleAddAppointment = (apt: DoctorAppointment) => {
+    setAppointments((prev) => [apt, ...prev]);
+  };
+
+  const handleOpenModule = (tab: ModuleTab) => {
+    setActiveTab(tab);
+    setViewMode("module");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleLogin = (loggedInProfile: SeniorProfile) => {
@@ -563,6 +578,16 @@ export default function App() {
               );
             })()}
 
+            {/* Proactive Intelligence Daily Care Briefing */}
+            <ProactiveDailyBriefing
+              profile={profile}
+              medicines={medicines}
+              onToggleMedicine={handleToggleMedicine}
+              appointments={appointments}
+              bills={bills}
+              onOpenModule={handleOpenModule}
+            />
+
             {/* 2. Senior 3-Point Pulse Strip */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Card 1: Medicines */}
@@ -643,6 +668,12 @@ export default function App() {
                 <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
               </div>
             </div>
+
+            {/* Everyday Senior Independence - Five Pillars Hub */}
+            <EverydayPillarsHub
+              profile={profile}
+              onOpenModule={handleOpenModule}
+            />
 
             {/* 3. The 3 Grand Sanctuary Portals */}
             <div className="space-y-6">
@@ -730,6 +761,9 @@ export default function App() {
                 ))}
               </div>
             </div>
+
+            {/* Senior-Centric Design & Trust Philosophy Banner */}
+            <SeniorTrustBanner profile={profile} />
           </div>
         ) : (
           /* VIEW MODE 2: FOCUSED MODULE VIEW WITH SANCTUARY BREADCRUMB */
@@ -867,33 +901,8 @@ Known Conditions: ${profile.medicalConditions.join(", ") || "None"}.`}
             <HealthOrganizer
               medicines={medicines}
               onToggleMedicine={handleToggleMedicine}
-              appointments={profile.emergencyContact ? [
-                {
-                  id: "apt-1",
-                  doctorName: "Dr. Arvind Mehta",
-                  specialty: "Senior Cardiologist",
-                  date: "Friday, Sep 26",
-                  time: "10:30 AM",
-                  location: "City Heart Care Clinic, Room 204",
-                  questionsToAsk: [
-                    "Should I adjust my blood pressure medicine dose?",
-                    "Is it safe to continue 30 minutes of morning walking?",
-                    "When is my next ECG due?",
-                  ],
-                },
-                {
-                  id: "apt-2",
-                  doctorName: "Dr. Sunita Rao",
-                  specialty: "Ophthalmology / Eye Care",
-                  date: "Oct 12",
-                  time: "03:00 PM",
-                  location: "Vision Eye Care Center",
-                  questionsToAsk: [
-                    "Is my reading glass power still correct?",
-                    "Are my dry eye lubricating drops sufficient?",
-                  ],
-                },
-              ] : []}
+              appointments={appointments}
+              onAddAppointment={handleAddAppointment}
               vitals={vitals}
               onAddVital={handleAddVital}
               profile={profile}

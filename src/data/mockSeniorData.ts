@@ -623,6 +623,45 @@ export const prebuiltTaskGuides: Record<string, DigitalTaskGuide> = {
       },
     ],
   },
+  "book-appointment": {
+    taskTitle: "Booking a Doctor or Clinic Appointment with Ease",
+    estimatedTime: "5 minutes",
+    prerequisites: [
+      "Name of your doctor or hospital clinic",
+      "List of your current medications and symptoms",
+      "Pen and paper to write down your appointment time & token number",
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Choose Between Phone Call or Online Portal",
+        instruction: "Decide whether you want to call the clinic reception directly or use their booking website. Calling is often the simplest and friendliest choice for seniors.",
+        tip: "You can use Mitraa's prepared clinic call script to speak confidently.",
+        safetyCheck: "Never share credit card PINs or passwords while booking an appointment.",
+      },
+      {
+        stepNumber: 2,
+        title: "State Your Doctor's Name & Preferred Time",
+        instruction: "Say: 'Hello, I would like to book a consultation with Dr. Arvind Mehta. A morning slot between 10:00 AM and 11:30 AM suits me best.'",
+        tip: "Morning slots are usually less delayed than late afternoon slots.",
+        safetyCheck: "Ask if someone can accompany you if pupil dilation or blood tests are planned.",
+      },
+      {
+        stepNumber: 3,
+        title: "Note Down the Date, Room Number, & Token",
+        instruction: "Listen carefully to the receptionist. Write down the confirmed Date, Time, Room Number, and Doctor's name in your notepad.",
+        tip: "Ask the receptionist to repeat the token number once more to be sure.",
+        safetyCheck: "Ask if you should come on an empty stomach (fasting) for any routine blood work.",
+      },
+      {
+        stepNumber: 4,
+        title: "Save in Mitraa & Prepare Your Questions",
+        instruction: "Add this visit to your Mitraa Health Organizer so you receive gentle reminders and have your 3 doctor questions ready on visit day.",
+        tip: "Mitraa can notify your family caregiver (Priya) so they know your schedule.",
+        safetyCheck: "You are all set! Have a glass of water and rest easy.",
+      },
+    ],
+  },
 };
 
 export const seniorBankingJargon = [

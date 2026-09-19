@@ -14,6 +14,7 @@ import {
   FileCheck,
   Search,
   RotateCcw,
+  CalendarCheck,
 } from "lucide-react";
 import { SeniorProfile, DigitalTaskGuide } from "../types";
 import { prebuiltTaskGuides } from "../data/mockSeniorData";
@@ -133,7 +134,34 @@ export const DigitalTaskAssistant: React.FC<DigitalTaskAssistantProps> = ({ prof
               ? "Elige una tarea común para practicar o seguir:"
               : "Choose a common task to practice or follow:"}
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <button
+              onClick={() => handleSelectPreset("book-appointment")}
+              className={`p-4 rounded-2xl border text-left transition active:scale-95 cursor-pointer min-h-[48px] ${
+                activeTaskId === "book-appointment" && !customGuide
+                  ? "bg-emerald-100 border-emerald-500 text-emerald-950 font-bold shadow-xs"
+                  : "bg-stone-50 border-stone-200 hover:bg-stone-100 text-stone-800 font-medium"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <CalendarCheck className="w-5 h-5 text-emerald-700" />
+                <span className="font-bold text-base">
+                  {profile.language === "Hindi"
+                    ? "डॉक्टर अपॉइंटमेंट बुक करें"
+                    : profile.language === "Spanish"
+                    ? "Reservar cita médica"
+                    : "Book Doctor Appointment"}
+                </span>
+              </div>
+              <span className="text-xs text-stone-600 block">
+                {profile.language === "Hindi"
+                  ? "क्लिनिक कॉल व ऑनलाइन स्लॉट चयन"
+                  : profile.language === "Spanish"
+                  ? "Llamada o reserva en línea sin estrés"
+                  : "Clinic call & online slot with ease"}
+              </span>
+            </button>
+
             <button
               onClick={() => handleSelectPreset("pay-bill")}
               className={`p-4 rounded-2xl border text-left transition active:scale-95 cursor-pointer min-h-[48px] ${

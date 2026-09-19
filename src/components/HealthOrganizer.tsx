@@ -15,6 +15,10 @@ import {
   MapPin,
   Check,
   RotateCcw,
+  PhoneCall,
+  Stethoscope,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Medicine, DoctorAppointment, VitalLog, SeniorProfile } from "../types";
 import { speechHelper } from "../utils/speech";
@@ -24,6 +28,7 @@ interface HealthOrganizerProps {
   medicines: Medicine[];
   onToggleMedicine: (id: string) => void;
   appointments: DoctorAppointment[];
+  onAddAppointment?: (apt: DoctorAppointment) => void;
   vitals: VitalLog[];
   onAddVital: (vital: Omit<VitalLog, "id">) => void;
   profile: SeniorProfile;
@@ -33,6 +38,7 @@ export const HealthOrganizer: React.FC<HealthOrganizerProps> = ({
   medicines,
   onToggleMedicine,
   appointments,
+  onAddAppointment,
   vitals,
   onAddVital,
   profile,
@@ -45,6 +51,98 @@ export const HealthOrganizer: React.FC<HealthOrganizerProps> = ({
   const [mealContext, setMealContext] = useState<"Fasting" | "Post Meal">("Fasting");
   const [vitalNotes, setVitalNotes] = useState<string>("");
   const [showVitalSuccess, setShowVitalSuccess] = useState<boolean>(false);
+
+  // New appointment builder state
+  const [showAptBuilder, setShowAptBuilder] = useState<boolean>(false);
+  const [aptDoctor, setAptDoctor] = useState<string>("Dr. Arvind Mehta");
+  const [aptSpecialty, setAptSpecialty] = useState<string>("Cardiologist");
+  const [aptDate, setAptDate] = useState<string>("Tuesday, Oct 3, 2026");
+  const [aptReason, setAptReason] = useState<string>("Blood pressure review & routine checkup");
+  const [aptGeneratedPlan, setAptGeneratedPlan] = useState<{
+    callScript: string;
+    questions: string[];
+    whatToBring: string[];
+  } | null>(null);
+
+  const handleGenerateAptPlan = () => {
+    const honorific = profile.preferredHonorific || profile.name;
+    let callScript = "";
+    let questions: string[] = [];
+    let whatToBring: string[] = [];
+
+    if (profile.language === "Hindi") {
+      callScript = `नमस्ते, मैं वरिष्ठ नागरिक ${honorific} के लिए ${aptDoctor} (${aptSpecialty}) से अपॉइंटमेंट बुक करने हेतु कॉल कर रहा/रही हूँ। क्या ${aptDate} के आसपास का सुबह का स्लॉट उपलब्ध है? कारण: ${aptReason}।`;
+      questions = [
+        "क्या मेरी वर्तमान दवाओं से बीपी और शुगर अच्छी तरह नियंत्रित है?",
+        "क्या मुझे अपनी नियमित दिनचर्या या आहार में कोई नया बदलाव करने की आवश्यकता है?",
+        "अगली जांच या टेस्ट रिपोर्ट कब आवश्यक होगी?",
+      ];
+      whatToBring = [
+        "वर्तमान दवाओं की मूल पर्ची व सूची",
+        "पिछले 2 हफ्तों का बीपी/शुगर डायरी रिकॉर्ड",
+        "रीडिंग चश्मा व पहचान पत्र",
+      ];
+    } else if (profile.language === "Spanish") {
+      callScript = `Hola, llamo para reservar una consulta médica con el ${aptDoctor} (${aptSpecialty}) para ${honorific}. ¿Tienen disponibilidad para ${aptDate}? Motivo: ${aptReason}.`;
+      questions = [
+        "¿Están mis medicamentos actuales manteniendo estables mis valores?",
+        "¿Necesito realizarme algún análisis de laboratorio previo?",
+        "¿Hay alguna indicación dietética o de caminata que deba ajustar?",
+      ];
+      whatToBring = [
+        "Lista completa de medicamentos actuales",
+        "Registro de lecturas recientes de presión y glucosa",
+        "Gafas de lectura y tarjeta médica",
+      ];
+    } else {
+      callScript = `Hello, I am calling to book a consultation with ${aptDoctor} (${aptSpecialty}) for senior patient ${honorific}. Is there a morning slot available on ${aptDate}? Reason: ${aptReason}.`;
+      questions = [
+        "Are my current blood pressure and vital readings safely in target range?",
+        "Are there any side effects or timing changes needed for my daily medications?",
+        "Do I need any routine lab tests done before my next follow-up?",
+      ];
+      whatToBring = [
+        "Current prescription bottles & medication list",
+        "Recent blood pressure and sugar log from Mitraa",
+        "Reading glasses and clinic appointment card",
+      ];
+    }
+
+    setAptGeneratedPlan({ callScript, questions, whatToBring });
+    speechHelper.speak(
+      profile.language === "Hindi"
+        ? "आपके डॉक्टर अपॉइंटमेंट के लिए क्लिनिक स्क्रिप्ट और प्रश्न तैयार हैं।"
+        : "Your clinic call script and doctor questions are prepared.",
+      { rate: profile.voiceSpeed, language: profile.language }
+    );
+  };
+
+  const handleSaveAptToSchedule = () => {
+    if (!onAddAppointment) return;
+    const newApt: DoctorAppointment = {
+      id: `apt-${Date.now()}`,
+      doctorName: aptDoctor,
+      specialty: aptSpecialty,
+      date: aptDate,
+      time: "10:30 AM",
+      location: "City Health Care Clinic, Suite 204",
+      questionsToAsk: aptGeneratedPlan
+        ? aptGeneratedPlan.questions
+        : [
+            "Are my morning vital readings stable?",
+            "Can I continue my gentle daily walking routine?",
+          ],
+    };
+    onAddAppointment(newApt);
+    setShowAptBuilder(false);
+    setAptGeneratedPlan(null);
+    speechHelper.speak(
+      profile.language === "Hindi"
+        ? "अपॉइंटमेंट सफलतापूर्वक सहेज लिया गया है।"
+        : "Appointment saved to your Mitraa schedule.",
+      { rate: profile.voiceSpeed, language: profile.language }
+    );
+  };
 
   const pendingMedicines = medicines.filter((m) => !m.takenToday);
 
@@ -307,7 +405,240 @@ export const HealthOrganizer: React.FC<HealthOrganizerProps> = ({
 
       {/* Tab 2: Doctor Appointments & Questions */}
       {activeTab === "appointments" && (
-        <div className="space-y-4 animate-fadeIn">
+        <div className="space-y-6 animate-fadeIn">
+          {/* Appointment Assistant Card */}
+          <div className="bg-white rounded-3xl border-2 border-emerald-200/90 p-6 sm:p-7 shadow-xs">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <Stethoscope className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-stone-900">
+                    {profile.language === "Hindi"
+                      ? "डॉक्टर अपॉइंटमेंट बुक व तैयारी सहायक"
+                      : profile.language === "Spanish"
+                      ? "Asistente de reserva y preparación de citas médicas"
+                      : "Doctor Appointment Booking & Prep Assistant"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-stone-600 font-medium">
+                    {profile.language === "Hindi"
+                      ? "क्लिनिक कॉल हेतु सरल संवाद, प्रश्न सूची व आवश्यक सामग्री तैयार करें"
+                      : profile.language === "Spanish"
+                      ? "Guión de llamada a la clínica, preguntas preparadas y qué llevar"
+                      : "Generate polite clinic calling script, smart doctor questions & carry checklist"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAptBuilder(!showAptBuilder)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm transition cursor-pointer min-h-[44px]"
+              >
+                <Plus className="w-4 h-4" />
+                <span>
+                  {showAptBuilder
+                    ? profile.language === "Hindi"
+                      ? "फॉर्म बंद करें"
+                      : "Close Form"
+                    : profile.language === "Hindi"
+                    ? "नया अपॉइंटमेंट तैयार करें"
+                    : "Plan New Appointment"}
+                </span>
+                {showAptBuilder ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {showAptBuilder && (
+              <div className="mt-6 pt-6 border-t border-emerald-100 space-y-5 animate-fadeIn">
+                {/* Specialty Preset Chips */}
+                <div>
+                  <label className="text-xs font-bold text-stone-600 uppercase tracking-wider block mb-2">
+                    {profile.language === "Hindi"
+                      ? "विशेषज्ञता चुनें:"
+                      : profile.language === "Spanish"
+                      ? "Especialidad médica:"
+                      : "Choose Specialty:"}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { spec: "Cardiologist", doc: "Dr. Arvind Mehta", icon: "🫀" },
+                      { spec: "Ophthalmologist", doc: "Dr. Sunita Rao", icon: "👁️" },
+                      { spec: "General Physician", doc: "Dr. K. S. Raman", icon: "🩺" },
+                      { spec: "Orthopedic", doc: "Dr. Ananya Sen", icon: "🦴" },
+                    ].map((item) => (
+                      <button
+                        key={item.spec}
+                        type="button"
+                        onClick={() => {
+                          setAptSpecialty(item.spec);
+                          setAptDoctor(item.doc);
+                        }}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center gap-1.5 ${
+                          aptSpecialty === item.spec
+                            ? "bg-emerald-100 text-emerald-950 border-emerald-400 shadow-2xs"
+                            : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
+                        }`}
+                      >
+                        <span>{item.icon}</span>
+                        <span>{item.spec} ({item.doc})</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold text-stone-700 block mb-1">
+                      {profile.language === "Hindi" ? "डॉक्टर का नाम" : "Doctor Name"}
+                    </label>
+                    <input
+                      type="text"
+                      value={aptDoctor}
+                      onChange={(e) => setAptDoctor(e.target.value)}
+                      className="w-full p-3 rounded-xl border border-stone-300 font-bold text-sm text-stone-900 focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-stone-700 block mb-1">
+                      {profile.language === "Hindi" ? "तारीख व पसंदीदा समय" : "Preferred Date & Time"}
+                    </label>
+                    <input
+                      type="text"
+                      value={aptDate}
+                      onChange={(e) => setAptDate(e.target.value)}
+                      className="w-full p-3 rounded-xl border border-stone-300 font-bold text-sm text-stone-900 focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">
+                    {profile.language === "Hindi" ? "मुलाकात का कारण / लक्षण" : "Reason for Visit / Symptoms"}
+                  </label>
+                  <input
+                    type="text"
+                    value={aptReason}
+                    onChange={(e) => setAptReason(e.target.value)}
+                    className="w-full p-3 rounded-xl border border-stone-300 font-medium text-sm text-stone-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. Blood pressure review, knee joint pain, prescription renewal"
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleGenerateAptPlan}
+                    className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm transition active:scale-95 shadow-xs cursor-pointer min-h-[46px]"
+                  >
+                    <Sparkles className="w-4 h-4 text-emerald-300" />
+                    <span>
+                      {profile.language === "Hindi"
+                        ? "क्लिनिक स्क्रिप्ट व प्रश्न तैयार करें"
+                        : profile.language === "Spanish"
+                        ? "Generar guión y preguntas"
+                        : "Generate Clinic Script & Questions"}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Generated Plan Output */}
+                {aptGeneratedPlan && (
+                  <div className="p-5 rounded-2xl bg-emerald-50/90 border border-emerald-300 space-y-4 animate-fadeIn">
+                    {/* Receptionist Calling Script */}
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <h4 className="font-extrabold text-xs uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+                          <PhoneCall className="w-4 h-4 text-emerald-700" />
+                          <span>
+                            {profile.language === "Hindi"
+                              ? "क्लिनिक रिसेप्शनिस्ट से बातचीत हेतु संवाद:"
+                              : "Receptionist Calling Script (Read or Show to Clinic):"}
+                          </span>
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            speechHelper.speak(aptGeneratedPlan.callScript, {
+                              rate: profile.voiceSpeed,
+                              language: profile.language,
+                            })
+                          }
+                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-white border border-emerald-200 text-xs font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer"
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                          <span>{t.btnListen}</span>
+                        </button>
+                      </div>
+                      <p className="text-sm font-semibold text-stone-800 bg-white p-3.5 rounded-xl border border-emerald-200/80 leading-relaxed">
+                        "{aptGeneratedPlan.callScript}"
+                      </p>
+                    </div>
+
+                    {/* Questions Checklist */}
+                    <div>
+                      <h4 className="font-extrabold text-xs uppercase tracking-wider text-emerald-950 mb-1.5 flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-emerald-700" />
+                        <span>
+                          {profile.language === "Hindi"
+                            ? "डॉक्टर से पूछने हेतु 3 महत्वपूर्ण प्रश्न:"
+                            : "3 Important Questions to Ask Your Doctor:"}
+                        </span>
+                      </h4>
+                      <ul className="space-y-1 bg-white p-3 rounded-xl border border-emerald-200/80">
+                        {aptGeneratedPlan.questions.map((q, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm font-medium text-stone-800">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0 mt-2" />
+                            <span>{q}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* What to Bring Checklist */}
+                    <div>
+                      <h4 className="font-extrabold text-xs uppercase tracking-wider text-emerald-950 mb-1.5 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                        <span>
+                          {profile.language === "Hindi"
+                            ? "साथ ले जाने वाली आवश्यक सामग्री:"
+                            : "Checklist: What to Carry to the Clinic:"}
+                        </span>
+                      </h4>
+                      <ul className="space-y-1 bg-white p-3 rounded-xl border border-emerald-200/80">
+                        {aptGeneratedPlan.whatToBring.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm font-medium text-stone-800">
+                            <span className="text-emerald-700 font-bold">✓</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Save to Mitraa Appointments Button */}
+                    <div className="pt-2 flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleSaveAptToSchedule}
+                        className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-xs transition active:scale-95 cursor-pointer min-h-[46px]"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {profile.language === "Hindi"
+                            ? "मेरे अपॉइंटमेंट शेड्यूल में जोड़ें"
+                            : "Confirm & Add to My Appointments"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* List of Existing Appointments */}
           {appointments.map((apt) => (
             <div
               key={apt.id}
