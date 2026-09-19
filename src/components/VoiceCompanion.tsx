@@ -54,6 +54,9 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
   const [micSupported, setMicSupported] = useState(true);
   const recognizerRef = useRef<any>(null);
   const latestTranscriptRef = useRef<string>("");
+  const isSubmittingRef = useRef<boolean>(false);
+  const prevLangRef = useRef(profile.language);
+  const prevHonorificRef = useRef(profile.preferredHonorific);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Auto scroll to bottom
@@ -61,17 +64,29 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Update initial greeting when profile user or language changes
+  // Update initial greeting when profile user or language changes, without blowing away existing chat
   useEffect(() => {
-    setMessages([
-      {
-        id: `welcome-${profile.preferredHonorific}-${profile.language}`,
-        role: "assistant",
-        text: getInitialGreeting(),
-        timestamp: "Just now",
-        voiceAudioAvailable: true,
-      },
-    ]);
+    if (
+      prevLangRef.current !== profile.language ||
+      prevHonorificRef.current !== profile.preferredHonorific
+    ) {
+      prevLangRef.current = profile.language;
+      prevHonorificRef.current = profile.preferredHonorific;
+      setMessages((prev) => {
+        if (prev.length <= 1) {
+          return [
+            {
+              id: `welcome-${profile.preferredHonorific}-${profile.language}`,
+              role: "assistant",
+              text: getInitialGreeting(),
+              timestamp: "Just now",
+              voiceAudioAvailable: true,
+            },
+          ];
+        }
+        return prev;
+      });
+    }
   }, [profile.preferredHonorific, profile.language]);
 
   // Handle TTS playback
@@ -108,8 +123,8 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
         setIsListening(false);
         // Automatically send the voice question when speech recognition finishes
         const spoken = latestTranscriptRef.current.trim();
-        if (spoken) {
-          latestTranscriptRef.current = "";
+        latestTranscriptRef.current = "";
+        if (spoken && !isSubmittingRef.current) {
           handleSendMessage(spoken);
         }
       },
@@ -132,25 +147,24 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
   };
 
   const stopListening = (sendIfPresent = true) => {
+    const textToSend = latestTranscriptRef.current.trim() || inputQuery.trim();
+    latestTranscriptRef.current = "";
     if (recognizerRef.current) {
       try {
         recognizerRef.current.stop();
       } catch (e) {}
     }
     setIsListening(false);
-    if (sendIfPresent) {
-      const spoken = latestTranscriptRef.current.trim() || inputQuery.trim();
-      if (spoken) {
-        latestTranscriptRef.current = "";
-        handleSendMessage(spoken);
-      }
+    if (sendIfPresent && textToSend && !isSubmittingRef.current) {
+      handleSendMessage(textToSend);
     }
   };
 
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
-    if (!query || isLoading) return;
+    if (!query || isLoading || isSubmittingRef.current) return;
 
+    isSubmittingRef.current = true;
     stopListening(false);
     stopSpeaking();
 
@@ -210,6 +224,7 @@ export const VoiceCompanion: React.FC<VoiceCompanionProps> = ({
       setMessages((prev) => [...prev, fallbackMsg]);
     } finally {
       setIsLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 

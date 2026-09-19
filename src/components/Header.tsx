@@ -6,7 +6,6 @@ import {
   Sun,
   Moon,
   AlertTriangle,
-  Type,
   Globe,
   Clock,
   Sparkles,
@@ -14,7 +13,7 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-import { SeniorProfile, Language, TextSize } from "../types";
+import { SeniorProfile, Language } from "../types";
 import { getTranslation } from "../utils/translations";
 
 interface HeaderProps {
@@ -65,12 +64,6 @@ export const Header: React.FC<HeaderProps> = ({
     { id: "Marathi", label: "मराठी (Marathi)" },
     { id: "Gujarati", label: "ગુજરાતી (Gujarati)" },
   ];
-
-  const cycleTextSize = () => {
-    const order: TextSize[] = ["normal", "large", "extra-large"];
-    const nextIndex = (order.indexOf(profile.textSize) + 1) % order.length;
-    onUpdateProfile({ textSize: order[nextIndex] });
-  };
 
   const getGreetingIcon = () => {
     const hour = new Date().getHours();
@@ -131,20 +124,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Accessibility & Voice Quick Controls */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Text Size Stepper */}
-          <button
-            id="accessibility-text-size-btn"
-            onClick={cycleTextSize}
-            title="Cycle text size: Normal, Large, Extra-Large"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-stone-200 hover:border-emerald-500 hover:bg-emerald-50 font-bold text-xs sm:text-sm text-stone-800 transition active:scale-95 shadow-2xs cursor-pointer min-h-[44px]"
-          >
-            <Type className="w-4 h-4 text-emerald-700" />
-            <span className="hidden xs:inline text-stone-600 font-medium">{t.btnTextSize}:</span>
-            <span className="uppercase text-xs font-extrabold bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded-md border border-emerald-200">
-              {profile.textSize === "extra-large" ? "XL" : profile.textSize === "large" ? "Large" : "Medium"}
-            </span>
-          </button>
-
           {/* High Contrast Toggle */}
           <button
             id="accessibility-contrast-btn"

@@ -135,6 +135,58 @@ export interface SimplifiedDocResult {
   safeAdvice: string;
 }
 
+export interface ExplainedDocumentResult {
+  documentTitle: string;
+  documentType: "prescription" | "medical_bill" | "lab_report" | "appointment" | "pharmacy_bill" | "utility_bill" | "insurance" | "other";
+  documentTypeLabel: string;
+  simpleSummary: string;
+  confidenceLevel: "high" | "moderate" | "review_needed";
+  extractedTextPreview?: string;
+  keyDates: {
+    label: string;
+    date: string;
+    isUrgent?: boolean;
+  }[];
+  medicines?: {
+    name: string;
+    dosage: string;
+    timing: string;
+    instructions: string;
+    quantity?: string;
+  }[];
+  testsAndResults?: {
+    testName: string;
+    resultValue: string;
+    normalRange?: string;
+    plainMeaning: string;
+    status: "normal" | "borderline" | "attention_needed";
+  }[];
+  billingDetails?: {
+    totalAmount: string;
+    amountPaid?: string;
+    balanceDue?: string;
+    dueDate?: string;
+    breakdown: { item: string; cost: string }[];
+  };
+  appointmentDetails?: {
+    doctorOrClinic: string;
+    dateTime: string;
+    location: string;
+    preparationInstructions: string[];
+  };
+  actionItems: {
+    priority: "must_do" | "optional" | "for_records";
+    action: string;
+    tip: string;
+  }[];
+  medicalTermsExplained: {
+    term: string;
+    plainMeaning: string;
+  }[];
+  safeAdvice: string;
+  disclaimer: string;
+}
+
 export interface ScamCheckResult {
   verdict: "SAFE" | "CAUTION" | "DANGEROUS_SCAM";
   riskScore: number;

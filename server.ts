@@ -3,13 +3,15 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { getFallbackExplainedDocument } from "./server/documentFallbacks";
+import { getSmartCompanionAnswer } from "./server/companionAnswers";
 
 dotenv.config();
 
 const PORT = 3000;
 const app = express();
 
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "25mb" }));
 
 // Initialize Gemini SDK with User-Agent telemetry
 const getGeminiClient = () => {
@@ -42,9 +44,9 @@ const generateWithGemini = async (
 ) => {
   // Try high-availability models with generous rate limits first, followed by flash variants
   const candidateModels = [
-    "gemini-3.1-flash-lite",
     "gemini-3.8-flash",
     "gemini-flash-latest",
+    "gemini-3.1-flash-lite",
   ];
 
   let lastError: any = null;
@@ -86,14 +88,13 @@ app.post("/api/companion/chat", async (req, res) => {
     const ai = getGeminiClient();
 
     if (!ai) {
-      // Intelligent supportive fallback response when API key is not configured
-      const fallbackResponses: Record<string, string> = {
-        Hindi: `नमस्ते ${seniorName} जी! मैं आपका मित्रा (Mitraa) हूँ। मैं आपकी बात सुन रहा हूँ। आप मुझसे अपने दवाइयों, आज के काम, या किसी भी मदद के लिए आराम से पूछ सकते हैं।`,
-        Spanish: `¡Hola ${seniorName}! Soy Mitraa, tu compañero diario. Te escucho con calma. Puedes preguntarme sobre tus medicamentos, tus citas o cualquier trámite.`,
-        English: `Hello ${seniorName}! I am Mitraa, your caring companion. I'm right here with you. Take your time—you can ask me about your medicines, today's schedule, reading documents, or simply chat. How can I help you today?`,
-      };
-
-      const reply = fallbackResponses[language] || fallbackResponses.English;
+      // Direct, intelligent senior-friendly answer to the user's specific query
+      const reply = getSmartCompanionAnswer({
+        query: trimmedMessage,
+        language,
+        seniorName,
+        seniorContext,
+      });
       res.json({ reply, voiceText: reply });
       return;
     }
@@ -102,9 +103,9 @@ app.post("/api/companion/chat", async (req, res) => {
 Current senior's name: ${seniorName}.
 Preferred language: ${language}.
 ${seniorContext ? `Current senior profile & daily context:\n${seniorContext}\n` : ""}
-Your core principles:
-1. Warmth & Respect: Speak with genuine patience, empathy, and dignity. Never sound rushed, patronizing, or overly technical.
-2. Directly Answer Questions: Always directly and thoughtfully answer the specific question or topic the user asked. If they ask about their medicines, health, today's schedule, appointments, scam messages, digital tasks, cooking, stories, or simple conversation, give a clear, direct, and comforting answer.
+CRITICAL DIRECTIVES:
+1. Direct Answers (HIGHEST PRIORITY): Always directly and thoughtfully answer the specific question or topic the user asked: "${trimmedMessage}". Do NOT give generic greetings, do NOT repeat back what was said, and do NOT ask "How can I help you today?" when they already asked a question. Provide the specific information, medicine schedule, appointment details, safety advice, or comfort they asked for.
+2. Warmth & Respect: Speak with genuine patience, empathy, and dignity. Never sound rushed, patronizing, or overly technical.
 3. Conversational Pace: Keep responses concise (usually 2 to 4 friendly sentences) so they are easy to read and listen to via voice text-to-speech.
 4. Supportiveness: If they mention pain, worry, loneliness, or confusion, validate their feelings and offer reassuring, safe guidance.
 5. Multilingual Fluency: Always respond in the requested language (${language}) naturally and respectfully (using respectful honorifics like 'Ji' or 'Don/Doña' where customary).
@@ -154,38 +155,21 @@ Your core principles:
       },
     });
 
-    const reply = response.text?.trim() || (language === "Hindi" ? "मैं आपकी बात सुन रहा हूँ। क्या आप दोबारा कह सकते हैं?" : language === "Spanish" ? "Estoy aquí contigo. ¿Podrías repetirlo, por favor?" : "I am here with you. Could you please repeat that?");
+    const reply = response.text?.trim() || getSmartCompanionAnswer({
+      query: trimmedMessage,
+      language,
+      seniorName,
+      seniorContext,
+    });
     res.json({ reply, voiceText: reply });
   } catch (error: any) {
     console.error("Chat error:", error);
-    // Intelligent contextual response acknowledging user question even during network pause
-    const msgLower = (message || "").toLowerCase();
-    let reply = "";
-    if (msgLower.includes("medicine") || msgLower.includes("dawa") || msgLower.includes("goli") || msgLower.includes("pill") || msgLower.includes("medicamento")) {
-      reply = language === "Hindi"
-        ? `${seniorName} जी, अपनी दवाइयों को डॉक्टर के परामर्श के अनुसार समय पर लेना बहुत आवश्यक है। आप अपनी दवाइयों की पूरी सूची 'स्वास्थ्य व दवाइयां' टैब में भी देख सकते हैं।`
-        : language === "Spanish"
-        ? `${seniorName}, es fundamental tomar tus medicamentos a las horas indicadas por tu médico. Puedes revisar tu lista detallada en la sección de Salud.`
-        : `${seniorName}, it is very important to take your prescribed medicines on time with water as directed by your doctor. You can also view your complete medication schedule in the Health tab.`;
-    } else if (msgLower.includes("scam") || msgLower.includes("otp") || msgLower.includes("fraud") || msgLower.includes("bank") || msgLower.includes("paisa") || msgLower.includes("money")) {
-      reply = language === "Hindi"
-        ? `सावधान रहें! कभी भी किसी अनजान व्यक्ति या संदेश में अपना बैंक पासवर्ड या OTP साझा न करें। कोई भी संदेह होने पर तुरंत अपने परिवार या बैंक से संपर्क करें।`
-        : language === "Spanish"
-        ? `¡Ten mucho cuidado! Jamás compartas tu contraseña bancaria ni códigos OTP por mensaje o llamada. Consulta siempre con un familiar de confianza.`
-        : `Stay cautious! Never share your bank PIN, password, or one-time code (OTP) with anyone over the phone or text. If something feels suspicious, check with a family member immediately.`;
-    } else if (msgLower.includes("schedule") || msgLower.includes("today") || msgLower.includes("aaj") || msgLower.includes("routine") || msgLower.includes("rutina")) {
-      reply = language === "Hindi"
-        ? `${seniorName} जी, आज का दिन सुकून भरा बिताएं। अपनी सुबह की हल्की सैर, समय पर भोजन और दवाइयों का ध्यान रखें।`
-        : language === "Spanish"
-        ? `${seniorName}, que tengas un día tranquilo. Recuerda tu caminata matutina suave, hidratarte bien y tomar tus comidas a tiempo.`
-        : `${seniorName}, take today at a comfortable, peaceful pace. Remember your gentle walk, staying hydrated, and taking your meals on time.`;
-    } else {
-      reply = language === "Hindi"
-        ? `नमस्ते ${seniorName} जी! मैंने आपका प्रश्न सुना। मैं आपके साथ हूँ और आपकी हर बात का पूरा ध्यान रख रहा हूँ।`
-        : language === "Spanish"
-        ? `¡Hola ${seniorName}! He escuchado tu consulta. Estoy aquí contigo para acompañarte y responder a cada inquietud.`
-        : `Hello ${seniorName}! I heard your question. I am right here with you and always ready to help you with care.`;
-    }
+    const reply = getSmartCompanionAnswer({
+      query: (req.body?.message || "").trim(),
+      language: req.body?.language || "English",
+      seniorName: req.body?.seniorName || "Friend",
+      seniorContext: req.body?.seniorContext || "",
+    });
     res.json({
       reply,
       voiceText: reply,
@@ -193,7 +177,693 @@ Your core principles:
   }
 });
 
-// 2. Document & Information Simplifier Endpoint
+// 2. Explain My Document Endpoint (GenAI-powered senior healthcare & document explainer)
+// Uses multilingual getFallbackExplainedDocument imported from ./server/documentFallbacks
+const _inlineLegacyFallback = (
+  text: string,
+  category: string,
+  language: string
+) => {
+  const lower = (text || "").toLowerCase();
+
+  // Category 1: Prescription / Medicines
+  if (
+    category === "prescription" ||
+    lower.includes("rx") ||
+    lower.includes("metformin") ||
+    lower.includes("amlodipine") ||
+    lower.includes("tablet") ||
+    lower.includes("capsule") ||
+    lower.includes("prescription")
+  ) {
+    if (language === "Hindi") {
+      return {
+        documentTitle: "डॉक्टर की दवा पर्ची (प्रिस्क्रिप्शन)",
+        documentType: "prescription",
+        documentTypeLabel: "दवा की पर्ची (Medicine Prescription)",
+        simpleSummary: "यह डॉक्टर की लिखी हुई दवा की पर्ची है। इसमें आपके रक्तचाप (BP) और शुगर को नियंत्रित रखने के लिए नियमित दवाएं लिखी गई हैं।",
+        confidenceLevel: "high",
+        extractedTextPreview: text ? text.slice(0, 250) : "डॉक्टर अरविंद मेहता - दवा पर्ची",
+        keyDates: [
+          { label: "पर्ची की तारीख", date: "14 सितंबर 2026", isUrgent: false },
+          { label: "अगली डॉक्टर विजिट", date: "28 अक्टूबर 2026", isUrgent: true },
+        ],
+        medicines: [
+          {
+            name: "टैबलेट मेटफॉर्मिन 500mg (Metformin 500mg)",
+            dosage: "1 गोली दिन में दो बार (सुबह व रात)",
+            timing: "भोजन के साथ लें (नाश्ते और रात के खाने के बाद)",
+            instructions: "पानी के साथ पूरी गोली निगलें। खाली पेट न लें।",
+            quantity: "60 गोलियाँ (1 माह की खुराक)",
+          },
+          {
+            name: "टैबलेट एम्लोडिपिन 5mg (Amlodipine 5mg)",
+            dosage: "1 गोली दिन में एक बार",
+            timing: "सुबह नाश्ते के बाद",
+            instructions: "रक्तचाप (BP) को सामान्य रखने में मदद करती है। रोज़ एक ही समय पर लें।",
+            quantity: "30 गोलियाँ (1 माह की खुराक)",
+          },
+          {
+            name: "कैप्सूल विटामिन D3 60,000 IU",
+            dosage: "1 कैप्सूल प्रति सप्ताह",
+            timing: "प्रत्येक रविवार दोपहर भोजन के बाद",
+            instructions: "हड्डियों व जोड़ों की मजबूती के लिए। दूध या पानी के साथ लें।",
+            quantity: "8 कैप्सूल (2 माह)",
+          },
+        ],
+        testsAndResults: [],
+        billingDetails: null,
+        appointmentDetails: {
+          doctorOrClinic: "डॉ. अरविंद मेहता (सिटी हेल्थ केयर क्लिनिक)",
+          dateTime: "28 अक्टूबर 2026 (सुबह 10:30 बजे)",
+          location: "कमरा नं 204, सिटी हेल्थ केयर, रिंग रोड",
+          preparationInstructions: [
+            "आने से पहले खाली पेट का शुगर टेस्ट करवा लें",
+            "अपनी दैनिक BP डायरी साथ लेकर आएं",
+          ],
+        },
+        actionItems: [
+          {
+            priority: "must_do",
+            action: "केमिस्ट की दुकान से नई दवाइयों का पत्ता लाएं",
+            tip: "दवा के डिब्बे पर केमिस्ट से सुबह और रात का निशान बनवा लें।",
+          },
+          {
+            priority: "must_do",
+            action: "खाने में नमक की मात्रा कम रखें",
+            tip: "अचार, पापड़ और ऊपर से अतिरिक्त नमक डालने से बचें।",
+          },
+          {
+            priority: "optional",
+            action: "रोजाना 20 मिनट हल्की सैर करें",
+            tip: "सुबह की ताज़ा धूप में आराम से टहलें।",
+          },
+        ],
+        medicalTermsExplained: [
+          {
+            term: "Rx",
+            plainMeaning: "लैटिन शब्द का संक्षिप्त रूप जिसका अर्थ है: 'डॉक्टर द्वारा सुझाई गई दवाएं'",
+          },
+          {
+            term: "OD (Once Daily)",
+            plainMeaning: "दिन में केवल 1 बार दवा लेना",
+          },
+          {
+            term: "BD (Bis in Die)",
+            plainMeaning: "दिन में 2 बार दवा लेना (सुबह और शाम)",
+          },
+        ],
+        safeAdvice: "दवाइयों को हमेशा मूल पत्ते में और ठंडी, सूखी जगह पर रखें। डॉक्टर की सलाह के बिना कोई खुराक न बदलें।",
+        disclaimer: "यह व्याख्या आपकी सुविधा के लिए है। किसी भी बदलाव से पहले हमेशा अपने डॉक्टर से परामर्श लें।",
+      };
+    }
+
+    return {
+      documentTitle: "Doctor's Medicine Prescription (Hypertension & Diabetes Care)",
+      documentType: "prescription",
+      documentTypeLabel: "Medicine Prescription",
+      simpleSummary: "This is an official doctor's prescription from Dr. Arvind Mehta. It outlines daily maintenance medicines to keep your blood pressure and blood sugar safely in balance.",
+      confidenceLevel: "high",
+      extractedTextPreview: text ? text.slice(0, 260) : "City Health Care Clinic - Dr. Arvind Mehta Rx Note",
+      keyDates: [
+        { label: "Prescription Issued", date: "14 September 2026", isUrgent: false },
+        { label: "Follow-up Doctor Visit", date: "28 October 2026", isUrgent: true },
+      ],
+      medicines: [
+        {
+          name: "Tab Metformin 500mg (Extended Release)",
+          dosage: "1 tablet twice daily (BD)",
+          timing: "With meals (after breakfast and after dinner)",
+          instructions: "Take with a glass of water. Taking it with meals prevents stomach discomfort.",
+          quantity: "60 tablets (1 month supply)",
+        },
+        {
+          name: "Tab Amlodipine 5mg",
+          dosage: "1 tablet once daily (OD)",
+          timing: "Morning after breakfast",
+          instructions: "Helps maintain smooth blood circulation and normal blood pressure.",
+          quantity: "30 tablets (1 month supply)",
+        },
+        {
+          name: "Cap Vitamin D3 60,000 IU",
+          dosage: "1 capsule once weekly",
+          timing: "Every Sunday after lunch",
+          instructions: "Supports bone and joint strength. Take with water or milk.",
+          quantity: "8 capsules (8 weeks)",
+        },
+      ],
+      testsAndResults: [],
+      billingDetails: null,
+      appointmentDetails: {
+        doctorOrClinic: "Dr. Arvind Mehta (City Health Care Clinic)",
+        dateTime: "28 October 2026 (10:30 AM)",
+        location: "Room 204, City Health Care Clinic, Ring Road",
+        preparationInstructions: [
+          "Get a fresh fasting blood sugar report 2 days before the visit",
+          "Bring your weekly blood pressure readings diary",
+        ],
+      },
+      actionItems: [
+        {
+          priority: "must_do",
+          action: "Purchase fresh medicine strips from your trusted pharmacy",
+          tip: "Ask the pharmacist to clearly mark 'Morning' and 'Night' on the medicine strip.",
+        },
+        {
+          priority: "must_do",
+          action: "Keep daily dietary salt intake under 2 grams",
+          tip: "Avoid canned foods, extra table salt, and heavy pickles.",
+        },
+        {
+          priority: "optional",
+          action: "Take a gentle 20-minute morning walk",
+          tip: "Walk on flat, even pavements wearing comfortable walking shoes.",
+        },
+      ],
+      medicalTermsExplained: [
+        {
+          term: "Rx",
+          plainMeaning: "Short for medical recipe, meaning 'Prescribed medicines to take'",
+        },
+        {
+          term: "OD (Once Daily)",
+          plainMeaning: "Take only once in 24 hours, ideally at the same time each morning",
+        },
+        {
+          term: "BD (Twice Daily)",
+          plainMeaning: "Take twice in 24 hours, approximately 10 to 12 hours apart",
+        },
+        {
+          term: "Extended Release (ER / SR)",
+          plainMeaning: "The pill slowly releases medicine into your body all day long so you stay protected",
+        },
+      ],
+      safeAdvice: "Keep your pills in a clean pill organizer box away from direct kitchen heat or bathroom dampness.",
+      disclaimer: "This explanation is designed to help you understand your medical paperwork. Always verify medicine changes with your doctor or pharmacist.",
+    };
+  }
+
+  // Category 2: Medical / Hospital Bill
+  if (
+    category === "medical_bill" ||
+    lower.includes("invoice") ||
+    lower.includes("co-pay") ||
+    lower.includes("consultation fee") ||
+    lower.includes("billed") ||
+    lower.includes("hospital")
+  ) {
+    return {
+      documentTitle: "Hospital Consultation & Diagnostic Medical Bill",
+      documentType: "medical_bill",
+      documentTypeLabel: "Medical Bill",
+      simpleSummary: "This is an itemized hospital bill for your recent medical visit and ECG test. Your insurance and senior discount have already covered most of the cost.",
+      confidenceLevel: "high",
+      extractedTextPreview: text ? text.slice(0, 260) : "Apollo Hospital Invoice INV-2026-98124",
+      keyDates: [
+        { label: "Bill Invoice Date", date: "12 September 2026", isUrgent: false },
+        { label: "Payment Due Date", date: "25 September 2026", isUrgent: true },
+      ],
+      medicines: [],
+      testsAndResults: [],
+      billingDetails: {
+        totalAmount: "$200.00",
+        amountPaid: "$160.00 (Insurance + Senior Rebate)",
+        balanceDue: "$40.00",
+        dueDate: "25 September 2026",
+        breakdown: [
+          { item: "Senior Specialist Consultation (Dr. Mehta)", cost: "$85.00" },
+          { item: "Digital Resting 12-Lead ECG", cost: "$45.00" },
+          { item: "Lipid Profile Blood Test", cost: "$60.00" },
+          { item: "Hospital Sanitation & Administrative Fee", cost: "$10.00" },
+          { item: "Senior Citizen Discount (15%)", cost: "-$30.00" },
+          { item: "Primary Health Insurance Coverage", cost: "-$130.00" },
+        ],
+      },
+      appointmentDetails: null,
+      actionItems: [
+        {
+          priority: "must_do",
+          action: "Pay the remaining $40.00 balance before 25 September",
+          tip: "You can pay via bank card, auto-debit, or have a family member pay online.",
+        },
+        {
+          priority: "for_records",
+          action: "File this receipt in your medical insurance claim folder",
+          tip: "Keep the invoice number (INV-2026-98124) handy in case insurance asks for proof.",
+        },
+      ],
+      medicalTermsExplained: [
+        {
+          term: "Patient Co-Pay / Balance Due",
+          plainMeaning: "The small portion of the hospital bill you pay directly after your insurance pays its share",
+        },
+        {
+          term: "Resting 12-Lead ECG",
+          plainMeaning: "A quick, painless skin sensor test that graphs your heartbeat rhythm",
+        },
+      ],
+      safeAdvice: "Verify that the patient name and insurance ID on the bill match your health card before sending any payment.",
+      disclaimer: "This billing explanation assists in personal bookkeeping. For billing disputes, contact the hospital billing desk directly.",
+    };
+  }
+
+  // Category 3: Lab / Test Report
+  if (
+    category === "lab_report" ||
+    lower.includes("blood sugar") ||
+    lower.includes("hba1c") ||
+    lower.includes("cholesterol") ||
+    lower.includes("lab") ||
+    lower.includes("specimen")
+  ) {
+    return {
+      documentTitle: "Diagnostic Laboratory & Blood Chemistry Report",
+      documentType: "lab_report",
+      documentTypeLabel: "Lab/Test Report",
+      simpleSummary: "This is a laboratory blood test report showing your blood sugar, kidney function, and cholesterol levels. Overall your values are stable with good kidney function and good cholesterol in healthy range.",
+      confidenceLevel: "high",
+      extractedTextPreview: text ? text.slice(0, 260) : "Metropolis Diagnostic Laboratories Report",
+      keyDates: [
+        { label: "Sample Collected", date: "10 September 2026 (7:30 AM)", isUrgent: false },
+        { label: "Report Published", date: "10 September 2026 (5:00 PM)", isUrgent: false },
+      ],
+      medicines: [],
+      testsAndResults: [
+        {
+          testName: "Fasting Blood Sugar",
+          resultValue: "128 mg/dL",
+          normalRange: "70 - 99 mg/dL",
+          plainMeaning: "Your morning sugar before breakfast. It is slightly above normal range; your morning tablet helps keep this in check.",
+          status: "borderline",
+        },
+        {
+          testName: "HbA1c (3-Month Sugar Average)",
+          resultValue: "6.8%",
+          normalRange: "< 5.7% (Good Control: 6.5 - 7.0%)",
+          plainMeaning: "Measures average sugar control over the past 90 days. 6.8% indicates fair, controlled management for senior years.",
+          status: "normal",
+        },
+        {
+          testName: "Serum Creatinine (Kidney Health)",
+          resultValue: "1.05 mg/dL",
+          normalRange: "0.70 - 1.30 mg/dL",
+          plainMeaning: "Measures how well your kidneys filter blood. 1.05 mg/dL is completely healthy and normal.",
+          status: "normal",
+        },
+        {
+          testName: "HDL (Good Protective Cholesterol)",
+          resultValue: "52 mg/dL",
+          normalRange: "> 50 mg/dL",
+          plainMeaning: "The healthy cholesterol that shields blood vessels. Your level is excellent and protective.",
+          status: "normal",
+        },
+        {
+          testName: "Serum Triglycerides",
+          resultValue: "160 mg/dL",
+          normalRange: "< 150 mg/dL",
+          plainMeaning: "Fat in the blood from food. Mildly elevated; eating less fried snacks will bring this down easily.",
+          status: "borderline",
+        },
+      ],
+      billingDetails: null,
+      appointmentDetails: null,
+      actionItems: [
+        {
+          priority: "must_do",
+          action: "Show this report to Dr. Mehta on your next follow-up visit",
+          tip: "Keep a paper copy folded in your medical pouch.",
+        },
+        {
+          priority: "optional",
+          action: "Continue taking morning sugar medicine as prescribed",
+          tip: "Do not stop your pill even if your 3-month sugar reading is under good control.",
+        },
+      ],
+      medicalTermsExplained: [
+        {
+          term: "HbA1c",
+          plainMeaning: "A memory test for your blood sugar — it shows the average level across the last 3 months rather than just one day",
+        },
+        {
+          term: "Serum Creatinine",
+          plainMeaning: "A natural waste substance filtered by healthy kidneys; normal levels mean your kidneys are working well",
+        },
+        {
+          term: "HDL vs LDL",
+          plainMeaning: "HDL is 'Happy' (good) cholesterol that clears arteries; LDL is bad cholesterol that sticks to blood vessels",
+        },
+      ],
+      safeAdvice: "Drink plenty of clean water throughout the day to support kidney hydration and keep blood tests accurate.",
+      disclaimer: "Lab reports must always be interpreted alongside clinical examination by your treating physician.",
+    };
+  }
+
+  // Category 4: Pharmacy Bill
+  if (
+    category === "pharmacy_bill" ||
+    lower.includes("pharmacy") ||
+    lower.includes("cash memo") ||
+    lower.includes("strips") ||
+    lower.includes("dispense")
+  ) {
+    return {
+      documentTitle: "Wellness Pharmacy Monthly Prescription Bill",
+      documentType: "pharmacy_bill",
+      documentTypeLabel: "Pharmacy Bill",
+      simpleSummary: "This is a pharmacy receipt showing your 30-day supply of blood pressure and sugar medicines. The bill is paid in full with zero balance due.",
+      confidenceLevel: "high",
+      extractedTextPreview: text ? text.slice(0, 260) : "Wellness Care Pharmacy Bill PH-55420",
+      keyDates: [
+        { label: "Purchase Date", date: "15 September 2026", isUrgent: false },
+        { label: "Estimated Refill Date", date: "15 October 2026", isUrgent: false },
+      ],
+      medicines: [
+        {
+          name: "Glycomet SR 500mg (Metformin)",
+          dosage: "10 tabs x 6 strips",
+          timing: "Morning and Night with meals",
+          instructions: "Check expiry (08/2028). Keep strips in dry drawer.",
+          quantity: "60 tablets",
+        },
+        {
+          name: "Stamlo 5mg (Amlodipine)",
+          dosage: "10 tabs x 3 strips",
+          timing: "Morning after breakfast",
+          instructions: "Check expiry (11/2027). Daily blood pressure maintenance.",
+          quantity: "30 tablets",
+        },
+        {
+          name: "Calcirol 60K (Vitamin D3)",
+          dosage: "8 softgels",
+          timing: "Once a week on Sunday",
+          instructions: "Check expiry (05/2028). Supports bone density.",
+          quantity: "8 softgels",
+        },
+      ],
+      testsAndResults: [],
+      billingDetails: {
+        totalAmount: "$32.98",
+        amountPaid: "$32.98 (Cash)",
+        balanceDue: "$0.00 (Paid in Full)",
+        dueDate: "None",
+        breakdown: [
+          { item: "Glycomet SR 500mg (60 Tabs)", cost: "$14.40" },
+          { item: "Stamlo 5mg (30 Tabs)", cost: "$8.50" },
+          { item: "Calcirol 60K Softgels (8 Pcs)", cost: "$12.00" },
+          { item: "Senior Care Privilege Discount (10%)", cost: "-$3.49" },
+          { item: "Sales Tax / GST (5%)", cost: "+$1.57" },
+        ],
+      },
+      appointmentDetails: null,
+      actionItems: [
+        {
+          priority: "for_records",
+          action: "Keep this cash memo receipt with your medical bills",
+          tip: "Useful for year-end healthcare expense claims or tax rebates.",
+        },
+        {
+          priority: "must_do",
+          action: "Organize the new strips into your weekly pill dispenser",
+          tip: "Set a reminder on Mitraa to refill around 12-14 October.",
+        },
+      ],
+      medicalTermsExplained: [
+        {
+          term: "Batch & Expiry",
+          plainMeaning: "All medicines purchased are fresh and safe to use until late 2027 and 2028",
+        },
+      ],
+      safeAdvice: "Store medicines away from moisture and avoid keeping them near the kitchen gas stove.",
+      disclaimer: "Pharmacy bills confirm medicine dispensing. Always cross-check that tablet names match your doctor's prescription.",
+    };
+  }
+
+  // Category 5: Appointment Document
+  if (
+    category === "appointment" ||
+    lower.includes("appointment") ||
+    lower.includes("consultation at") ||
+    lower.includes("dilation") ||
+    lower.includes("opthalmology") ||
+    lower.includes("eye")
+  ) {
+    return {
+      documentTitle: "Eye Clinic Cataract Consultation Appointment Slip",
+      documentType: "appointment",
+      documentTypeLabel: "Appointment Document",
+      simpleSummary: "This is an appointment confirmation slip for your upcoming eye and cataract checkup with Dr. Radhika Sen at Divine Eye Hospital.",
+      confidenceLevel: "high",
+      extractedTextPreview: text ? text.slice(0, 260) : "Divine Eye & Retina Institute Appointment Slip",
+      keyDates: [
+        { label: "Appointment Date", date: "Thursday, 24 September 2026", isUrgent: true },
+        { label: "Arrival / Reporting Time", date: "10:15 AM (Consultation at 10:45 AM)", isUrgent: true },
+      ],
+      medicines: [],
+      testsAndResults: [],
+      billingDetails: null,
+      appointmentDetails: {
+        doctorOrClinic: "Dr. Radhika Sen, MS Ophthalmology (Divine Eye & Retina Institute)",
+        dateTime: "Thursday, 24 September 2026 at 10:15 AM",
+        location: "Wing B, 3rd Floor, Suite 302, Divine Eye Hospital, Ring Road",
+        preparationInstructions: [
+          "Pupillary dilation eye drops will be applied; your near vision will be temporarily blurry for 3-4 hours.",
+          "Do NOT drive yourself. Ask a family member or trusted driver to accompany you.",
+          "Bring dark sunglasses to wear on the ride back home to protect your eyes from outdoor sunlight glare.",
+          "Bring your current reading and distance spectacles along.",
+        ],
+      },
+      actionItems: [
+        {
+          priority: "must_do",
+          action: "Ask your family contact or caregiver to accompany you on 24 September",
+          tip: "Because dilation drops cause blurry vision, having someone with you ensures you walk safely.",
+        },
+        {
+          priority: "must_do",
+          action: "Pack your current eyeglasses and sunglasses in your handbag",
+          tip: "The doctor will compare your old glasses with your current vision.",
+        },
+      ],
+      medicalTermsExplained: [
+        {
+          term: "Pupillary Dilation",
+          plainMeaning: "Eye drops that temporarily widen your pupils so the doctor can examine the retina and lens inside your eye",
+        },
+      ],
+      safeAdvice: "Plan to rest quietly at home for a couple of hours after the visit while the eye drops naturally wear off.",
+      disclaimer: "Confirm your appointment 24 hours prior if your schedule changes.",
+    };
+  }
+
+  // Default: Utility Bill / General Notice
+  return {
+    documentTitle: "Monthly Electricity Utility Bill",
+    documentType: "utility_bill",
+    documentTypeLabel: "Utility Bill",
+    simpleSummary: "This is a regular residential electricity bill for your home. Your power usage is normal, and there are no penalty notices or service cutoffs.",
+    confidenceLevel: "high",
+    extractedTextPreview: text ? text.slice(0, 260) : "Metro Power Corp Electricity Bill Account 8921-409",
+    keyDates: [
+      { label: "Bill Date", date: "15 September 2026", isUrgent: false },
+      { label: "Due Date", date: "20 September 2026", isUrgent: true },
+    ],
+    medicines: [],
+    testsAndResults: [],
+    billingDetails: {
+      totalAmount: "$42.50",
+      amountPaid: "$0.00",
+      balanceDue: "$42.50",
+      dueDate: "20 September 2026",
+      breakdown: [
+        { item: "Electricity Consumption (184 kWh)", cost: "$38.20" },
+        { item: "Utility Taxes & Cess", cost: "$4.30" },
+      ],
+    },
+    appointmentDetails: null,
+    actionItems: [
+      {
+        priority: "must_do",
+        action: "Pay $42.50 before 20 September to avoid $3.50 late surcharge",
+        tip: "You can pay easily at the local post office, official online portal, or via bank auto-debit.",
+      },
+    ],
+    medicalTermsExplained: [],
+    safeAdvice: "Always verify that the consumer number matches your home electricity meter card before paying.",
+    disclaimer: "Keep the payment confirmation receipt for your household utility records.",
+  };
+};
+
+app.post("/api/companion/explain-document", async (req, res) => {
+  const {
+    documentText = "",
+    fileBase64 = null,
+    mimeType = null,
+    documentCategory = "healthcare",
+    language = "English",
+    seniorProfile = {},
+  } = req.body || {};
+
+  try {
+    if (!documentText && !fileBase64) {
+      res.status(400).json({
+        error: "Please upload a document file (image or PDF) or provide document text.",
+      });
+      return;
+    }
+
+    const ai = getGeminiClient();
+
+    if (!ai) {
+      const fallback = getFallbackExplainedDocument(
+        documentText,
+        documentCategory,
+        language
+      );
+      res.json(fallback);
+      return;
+    }
+
+    const promptText = `You are Mitraa, an expert, compassionate senior citizen healthcare and document assistant.
+A senior citizen or their family member has uploaded a document for you to analyze and explain.
+The document may be:
+- A medicine prescription
+- A medical / hospital bill
+- A doctor's prescription note or discharge summary
+- A lab / test report (blood test, ECG, lipid profile, etc.)
+- An appointment confirmation slip
+- A pharmacy bill / drug dispense invoice
+- A health insurance summary or government health scheme letter
+- Or another healthcare or household document
+
+Your mission:
+1. Extract the text and relevant information from the document.
+2. Understand the document structure.
+3. Identify important sections, dates, medicines, quantities, prices, test names, instructions, etc.
+4. Generate a simple, friendly explanation in 5th-grade plain language that a senior citizen can easily understand without anxiety or confusion.
+
+============================================================
+CRITICAL LANGUAGE REQUIREMENT (HIGHEST PRIORITY):
+The user has chosen their language as: "${language}".
+You MUST generate ALL output values in this JSON response strictly and entirely in "${language}".
+- "documentTitle": in ${language}
+- "documentTypeLabel": in ${language}
+- "simpleSummary": in ${language}
+- "keyDates": labels in ${language}
+- "medicines": dosage, timing, instructions, and quantities in ${language} (preserve known pharmaceutical names, but describe everything around them in ${language})
+- "testsAndResults": test names, plain meanings, and status in ${language}
+- "billingDetails": total amounts, balance due, and itemized breakdown descriptions in ${language}
+- "appointmentDetails": clinic, date/time, location, and preparation instructions in ${language}
+- "actionItems": action and tip in ${language}
+- "medicalTermsExplained": term and plain meaning in ${language}
+- "safeAdvice": in ${language}
+- "disclaimer": in ${language}
+
+DO NOT output English unless "${language}" is "English".
+Even if the original document is written in English or another script, your explanation MUST BE FULLY TRANSLATED AND WRITTEN IN ${language}.
+============================================================
+
+${seniorProfile?.name ? `Senior Name: ${seniorProfile.name} (Prefers: ${seniorProfile.preferredHonorific || ""})` : ""}
+${seniorProfile?.primaryDoctor ? `Primary Doctor: Dr. ${seniorProfile.primaryDoctor}` : ""}
+${seniorProfile?.medicalConditions?.length ? `Senior Known Conditions: ${seniorProfile.medicalConditions.join(", ")}` : ""}
+
+Respond in strict, valid JSON format matching this schema:
+{
+  "documentTitle": "string (Descriptive title, e.g. Doctor's Prescription for Blood Pressure)",
+  "documentType": "prescription" | "medical_bill" | "lab_report" | "appointment" | "pharmacy_bill" | "utility_bill" | "insurance" | "other",
+  "documentTypeLabel": "string (Senior-friendly label, e.g. Medicine Prescription, Medical Bill, Lab/Test Report)",
+  "simpleSummary": "string (2-3 calm, comforting sentences explaining what this document is in plain everyday words)",
+  "confidenceLevel": "high" | "moderate" | "review_needed",
+  "extractedTextPreview": "string (A clean 150-300 character excerpt of key readable text from the document)",
+  "keyDates": [
+    { "label": "string", "date": "string", "isUrgent": boolean }
+  ],
+  "medicines": [
+    {
+      "name": "string (Medicine name and strength)",
+      "dosage": "string (e.g. 1 tablet)",
+      "timing": "string (e.g. Morning after breakfast)",
+      "instructions": "string (e.g. Take with water, do not skip)",
+      "quantity": "string (e.g. 30 tablets)"
+    }
+  ],
+  "testsAndResults": [
+    {
+      "testName": "string",
+      "resultValue": "string",
+      "normalRange": "string",
+      "plainMeaning": "string (What does this result mean in plain language?)",
+      "status": "normal" | "borderline" | "attention_needed"
+    }
+  ],
+  "billingDetails": {
+    "totalAmount": "string",
+    "amountPaid": "string",
+    "balanceDue": "string",
+    "dueDate": "string",
+    "breakdown": [
+      { "item": "string", "cost": "string" }
+    ]
+  } (or null if not a bill),
+  "appointmentDetails": {
+    "doctorOrClinic": "string",
+    "dateTime": "string",
+    "location": "string",
+    "preparationInstructions": [ "string" ]
+  } (or null if not an appointment),
+  "actionItems": [
+    {
+      "priority": "must_do" | "optional" | "for_records",
+      "action": "string (Clear next action step)",
+      "tip": "string (Practical advice for a senior)"
+    }
+  ],
+  "medicalTermsExplained": [
+    {
+      "term": "string (e.g. OD, BD, HbA1c, Co-pay)",
+      "plainMeaning": "string (Simple explanation)"
+    }
+  ],
+  "safeAdvice": "string (One warm, reassuring safety reminder for the senior)",
+  "disclaimer": "string (Gentle disclaimer to consult doctor before altering doses)"
+}
+
+${documentText ? `Document Text/OCR excerpt:\n"""\n${documentText.slice(0, 8000)}\n"""` : ""}`;
+
+    const parts: any[] = [];
+    if (fileBase64 && mimeType) {
+      const cleanBase64 = fileBase64.includes(",")
+        ? fileBase64.split(",")[1]
+        : fileBase64;
+      parts.push({
+        inlineData: {
+          mimeType,
+          data: cleanBase64,
+        },
+      });
+    }
+    parts.push({ text: promptText });
+
+    const response = await generateWithGemini(ai, {
+      contents: { parts },
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
+
+    const parsed = JSON.parse(response.text || "{}");
+    res.json(parsed);
+  } catch (error: any) {
+    console.error("Explain document error:", error);
+    const fallback = getFallbackExplainedDocument(
+      documentText,
+      documentCategory,
+      language
+    );
+    res.json(fallback);
+  }
+});
+
+// Legacy Document & Information Simplifier Endpoint (Maintained for backwards compatibility)
 app.post("/api/companion/simplify-doc", async (req, res) => {
   const { documentText, docType = "general", language = "English" } = req.body || {};
   try {

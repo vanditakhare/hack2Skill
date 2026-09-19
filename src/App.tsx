@@ -43,6 +43,7 @@ import { FinanceAssistant } from "./components/FinanceAssistant";
 import { CompanionPersonalization } from "./components/CompanionPersonalization";
 import { EmergencyModal } from "./components/EmergencyModal";
 import { LoginPage } from "./components/LoginPage";
+import { CalmBreathSection } from "./components/CalmBreathSection";
 import { speechHelper, playCalmChime } from "./utils/speech";
 import { getTranslation } from "./utils/translations";
 
@@ -78,24 +79,9 @@ export default function App() {
   const [vitals, setVitals] = useState<VitalLog[]>(initialVitals);
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [breathingActive, setBreathingActive] = useState<boolean>(false);
-  const [breathingText, setBreathingText] = useState<string>(t.breathIn);
 
   const handleStartBreathing = () => {
-    playCalmChime();
-    setBreathingActive(true);
-    setBreathingText(t.breathIn);
-    setTimeout(() => {
-      setBreathingText(t.breathHold);
-      setTimeout(() => {
-        setBreathingText(t.breathOut);
-        setTimeout(() => {
-          setBreathingText(t.breathRest);
-          setTimeout(() => {
-            setBreathingActive(false);
-          }, 3000);
-        }, 4000);
-      }, 4000);
-    }, 4000);
+    setBreathingActive((prev) => !prev);
   };
 
   const handleLogin = (loggedInProfile: SeniorProfile) => {
@@ -199,6 +185,16 @@ export default function App() {
           desc: t.modDailyDesc,
           icon: <CalendarCheck className="w-5 h-5 text-emerald-700" />,
           action: t.modDailyAction,
+        },
+        {
+          id: "calm" as any,
+          name: t.btnCalmBreath,
+          badge: "Soothing Sounds",
+          badgeColor: "bg-teal-100 text-teal-950 border-teal-300",
+          desc: "Relaxing 4-phase breathing cycle with gentle rain, ocean waves, birds, forest, or meditation sounds.",
+          icon: <Wind className="w-5 h-5 text-teal-700" />,
+          action: "Breathe",
+          isBreathing: true,
         },
       ],
     },
@@ -459,11 +455,16 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               type="button"
+              id="header-calm-breath-btn"
               onClick={handleStartBreathing}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-xs sm:text-sm font-bold transition cursor-pointer min-h-[42px]"
-              title="Play peaceful chime and take a calming breath"
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border text-xs sm:text-sm font-bold transition cursor-pointer min-h-[42px] ${
+                breathingActive
+                  ? "bg-teal-700 text-white border-teal-800 shadow-sm"
+                  : "bg-teal-50 hover:bg-teal-100 text-teal-900 border-teal-200"
+              }`}
+              title="Open Calm Breath with soothing background sounds"
             >
-              <Wind className="w-4 h-4 text-teal-700" />
+              <Wind className={`w-4 h-4 ${breathingActive ? "text-white" : "text-teal-700"}`} />
               <span>{t.btnCalmBreath}</span>
             </button>
 
@@ -498,30 +499,12 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dynamic Calming Breathing Modal / Banner */}
+        {/* Dynamic Calming Breathing Section with Optional Soothing Sounds */}
         {breathingActive && (
-          <div className="sanctuary-card-warm p-6 rounded-3xl border-2 border-teal-300 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 animate-fadeIn">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xl animate-companion-pulse shadow-sm">
-                ॐ
-              </div>
-              <div>
-                <h3 className="font-display text-xl font-bold text-teal-950">
-                  {breathingText}
-                </h3>
-                <p className="text-xs sm:text-sm text-teal-800 font-medium">
-                  {t.reassuranceCalm}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setBreathingActive(false)}
-              className="px-4 py-2 rounded-2xl bg-teal-100 hover:bg-teal-200 text-teal-900 font-bold text-xs sm:text-sm transition cursor-pointer"
-            >
-              {t.btnBack}
-            </button>
-          </div>
+          <CalmBreathSection
+            profile={profile}
+            onClose={() => setBreathingActive(false)}
+          />
         )}
 
         {/* VIEW MODE 1: SANCTUARY DECK (Unique Senior Portal Hub) */}
@@ -703,6 +686,9 @@ export default function App() {
                           onClick={() => {
                             if (m.isEmergency) {
                               setShowEmergencyModal(true);
+                            } else if (m.isBreathing) {
+                              setBreathingActive(true);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
                             } else {
                               setActiveTab(m.id);
                               setViewMode("module");

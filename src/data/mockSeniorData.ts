@@ -334,28 +334,133 @@ export const initialBills: BillItem[] = [
 
 export const sampleDocuments = [
   {
-    id: "doc1",
+    id: "doc-prescription",
+    title: "Doctor's Medicine Prescription (Hypertension & Diabetes)",
+    tag: "Medicine Prescription",
+    category: "prescription",
+    preview: `CITY HEALTH CARE CLINIC
+Dr. Arvind Mehta, MD (Internal Medicine), Reg No: MED-88412
+Date: 14 September 2026
+Patient: Senior Patient, Age: 71, BP: 138/86 mmHg, Fasting Blood Sugar: 128 mg/dL
+
+Rx (Prescription):
+1. Tab Metformin 500mg (Extended Release)
+   - Dosage: 1 tablet twice daily (BD) - with breakfast and dinner
+   - Duration: 30 days. Quantity: 60 tablets
+   - Note: Do not skip meals; drink adequate water
+
+2. Tab Amlodipine 5mg
+   - Dosage: 1 tablet once daily (OD) - morning after breakfast
+   - Duration: 30 days. Quantity: 30 tablets
+   - Note: Monitor BP weekly
+
+3. Cap Vitamin D3 60,000 IU
+   - Dosage: 1 capsule once weekly (every Sunday after lunch)
+   - Duration: 8 weeks. Quantity: 8 capsules
+
+Advice & Instructions:
+- Maintain daily sodium intake below 2 grams
+- 20 minutes gentle walking daily
+- Next follow-up visit: 28 October 2026 with recent fasting sugar report`,
+  },
+  {
+    id: "doc-medical-bill",
+    title: "Hospital Consultation & Diagnostic Medical Bill",
+    tag: "Medical Bill",
+    category: "medical_bill",
+    preview: `APOLLO MEMORIAL HOSPITAL & DAY CARE
+Invoice No: INV-2026-98124 | Date: 12 September 2026
+Patient: Senior Patient | Patient ID: PT-7709 | Dept: Cardiology
+
+ITEMIZED CHARGES:
+1. Senior Specialist Consultation Fee (Dr. Mehta) - $85.00
+2. Digital Resting 12-Lead ECG - $45.00
+3. Complete Lipid Profile & Blood Biochemistry - $60.00
+4. Hospital Administrative & Sanitation Charge - $10.00
+-------------------------------------------------------
+Total Billed Amount: $200.00
+Senior Citizen Health Discount (15%): -$30.00
+Primary Health Insurance Approved Share: -$130.00
+-------------------------------------------------------
+Patient Co-Pay / Balance Amount Due: $40.00
+Payment Status: Pending
+Due Date: 25 September 2026
+Payment Mode Accepted: Cash, Credit/Debit Card, UPI, Auto-Debit.`,
+  },
+  {
+    id: "doc-lab-report",
+    title: "Comprehensive Blood & Lipid Profile Lab Report",
+    tag: "Lab/Test Report",
+    category: "lab_report",
+    preview: `METROPOLIS DIAGNOSTIC LABORATORIES
+Specimen Collected: 10 Sep 2026 07:30 AM | Reported: 10 Sep 2026 05:00 PM
+Patient Name: Senior Patient (71 Y / Male) | Ref By: Dr. Arvind Mehta
+
+BIOCHEMISTRY & METABOLIC PANEL:
+• Fasting Blood Sugar: 128 mg/dL (Normal Range: 70 - 99 mg/dL) [Borderline Elevated]
+• HbA1c (Glycated Hemoglobin): 6.8% (Normal: < 5.7%, Fair Control: 6.5 - 7.0%) [Controlled]
+• Serum Creatinine: 1.05 mg/dL (Normal: 0.70 - 1.30 mg/dL) [Normal Kidney Function]
+
+LIPID PROFILE:
+• Total Cholesterol: 182 mg/dL (Desirable: < 200 mg/dL) [Normal]
+• HDL (Good Cholesterol): 52 mg/dL (Protective: > 50 mg/dL) [Optimal]
+• LDL (Bad Cholesterol): 98 mg/dL (Optimal: < 100 mg/dL) [Optimal]
+• Serum Triglycerides: 160 mg/dL (Normal: < 150 mg/dL) [Mildly Elevated]
+
+Clinical Note: Fasting blood sugar mildly above baseline; HbA1c suggests fair control. Share with treating physician during scheduled follow-up.`,
+  },
+  {
+    id: "doc-pharmacy-bill",
+    title: "Wellness Pharmacy Monthly Prescription Bill",
+    tag: "Pharmacy Bill",
+    category: "pharmacy_bill",
+    preview: `WELLNESS CARE PHARMACY & DRUGSTORE
+Store #42, Main Market Road | GSTIN / Tax ID: 27AABCT1234F1Z5
+Bill / Cash Memo No: PH-55420 | Date: 15 Sep 2026 | Time: 11:24 AM
+Doctor: Dr. A. Mehta | Customer: Senior Patient
+
+MEDICINE DISPENSED:
+1. Glycomet SR 500mg (Metformin) - 6 Strips x 10 Tabs (60 Tabs)
+   Batch: GM-2604 | Expiry: 08/2028 | Price: $14.40
+2. Stamlo 5mg (Amlodipine) - 3 Strips x 10 Tabs (30 Tabs)
+   Batch: ST-9912 | Expiry: 11/2027 | Price: $8.50
+3. Calcirol 60K (Vitamin D3) - 8 Softgels
+   Batch: CR-1102 | Expiry: 05/2028 | Price: $12.00
+-------------------------------------------------------
+Subtotal: $34.90
+Senior Care Privilege Rebate (10%): -$3.49
+Tax (GST 5%): $1.57
+TOTAL AMOUNT CHARGED: $32.98
+Amount Paid (Cash): $32.98 | Balance Due: $0.00 (PAID IN FULL)
+Pharmacist Note: Take Glycomet with food to avoid stomach upset. Keep out of direct sunlight.`,
+  },
+  {
+    id: "doc-appointment",
+    title: "Eye Care Clinic Cataract Follow-up Appointment Slip",
+    tag: "Appointment Document",
+    category: "appointment",
+    preview: `DIVINE EYE & RETINA INSTITUTE
+Appointment Confirmation Slip | Booking Ref: EYE-9021
+Patient: Senior Patient | Age: 71
+
+APPOINTMENT DETAILS:
+• Consulting Specialist: Dr. Radhika Sen, MS Ophthalmology (Cataract & Glaucoma)
+• Date: Thursday, 24 September 2026
+• Reporting Time: 10:15 AM (Consultation at 10:45 AM)
+• Location: Wing B, 3rd Floor, Suite 302, Divine Eye Hospital, Ring Road
+
+PATIENT INSTRUCTIONS BEFORE VISIT:
+1. Please bring your existing reading and distance glasses.
+2. Pupillary dilation eye drops will be administered; your vision may be blurry for 3-4 hours. Please do not drive; have a family member or attendant accompany you.
+3. Bring sunglasses to protect against glare after dilation.
+4. If taking glaucoma drops, administer your morning drops as usual.`,
+  },
+  {
+    id: "doc-utility-bill",
     title: "Monthly Electricity Utility Bill",
     tag: "Utility Bill",
+    category: "utility_bill",
     preview: "Metro Power Corp - Residential Bill. Account: 8921-409. Billing Period: 15 Aug - 14 Sep. Total Units Consumed: 184 kWh. Current Charges: $38.20. Taxes & Cess: $4.30. Total Amount Due: $42.50. Due Date: 20 September. Late payment surcharge of $3.50 will apply after due date. Pay online safely at official portal or designated post offices.",
-  },
-  {
-    id: "doc2",
-    title: "Cardiology Discharge & Prescription Note",
-    tag: "Medical Document",
-    preview: "City Heart Center. Patient: Senior Member. Diagnosis: Essential Hypertension. Echocardiogram: Normal LV function (EF 60%). Advice: Continue Tab Amlodipine 5mg once daily post-breakfast. Restrict dietary sodium to under 2g/day. Regular 20 min morning walk recommended. Avoid sudden postural changes. Follow-up consultation in 6 weeks with fresh BP log.",
-  },
-  {
-    id: "doc3",
-    title: "Bank Senior Citizen Pension Advisory",
-    tag: "Bank Notice",
-    preview: "National Trust Bank - Dear Senior Pensioner, this is an advisory regarding your annual Life Certificate (Jeevan Pramaan) submission. Window opens from 1st October to 30th November. You may submit digitally via facial recognition app at home or visit your local branch. No bank official will ever ask for your Debit Card PIN or OTP. Pension credit will continue uninterrupted.",
-  },
-  {
-    id: "doc4",
-    title: "Health Insurance Annual Renewal Summary",
-    tag: "Insurance Letter",
-    preview: "Golden Shield Senior Health Insurance Policy #GS-99401. Insured: Senior Member & Spouse. Sum Insured: $25,000 with 0% room rent capping. Pre-existing illness covered. Premium Due: $320 payable before Oct 15 to maintain continuous coverage discount. Free annual master health checkup coupon attached.",
   },
 ];
 
